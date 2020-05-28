@@ -16,7 +16,7 @@ struct op_code
     int op_cod;
     struct op_code *next;
 }op_code[11];
-void red_op_code()
+void red_op_code()//讀op_code
 {
     FILE *fp_r = fopen("OP_code.txt", "r");
     char reg1[100];
@@ -26,11 +26,11 @@ void red_op_code()
         printf("------------讀取op_code錯誤-----------");
         return ;
     }
-    while(!feof(fp_r)) {
+    while(!feof(fp_r)) {//讀取資料
          fscanf(fp_r, "%s", &reg1);
          substr=strtok(reg1,",");
-        do {
-            printf("%s\n",substr);
+        do {//字串分割
+            printf("%d\n",((int)substr));//現在處理赫旭
             substr = strtok(NULL, ",");
            } while (substr);
          printf("----%s\n", reg1);
