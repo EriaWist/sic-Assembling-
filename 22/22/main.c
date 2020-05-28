@@ -6,70 +6,40 @@
 //  Copyright © 2020 阿騰. All rights reserved.
 //
 
-//#include <stdio.h>
-//
-//
-//
-//int main(){
-//
-//
-//
-//    FILE *pFile;
-//
-//    char buffer[]={ 'H','e','y' };
-//
-//
-//
-//    pFile = fopen( "write.txt","w" );
-//
-//    if( NULL == pFile ){
-//
-//        printf( "open failure" );
-//
-//        return 1;
-//
-//    }else{
-//
-//        fwrite(buffer,1,sizeof(buffer),pFile);
-//
-//    }
-//
-//
-//
-//    fclose(pFile);
-//
-//    return 0;
-//
-//}
-
 #include <stdio.h>
-//
-//int main(){
-//    freopen("OP_code.txt", "r", stdin);
-//    char a[100];
-//    scanf("%s", &a);
-//    printf("%s\n", a);
-//    return 0;
-//}
-
+#include <string.h>
+struct op_code
+{
+    char op_name[10];
+    char op_m[5];
+    int op_format;
+    int op_cod;
+    struct op_code *next;
+}op_code[11];
+void red_op_code()
+{
+    FILE *fp_r = fopen("OP_code.txt", "r");
+    char reg1[100];
+    if (fp_r == NULL)
+    {
+        printf("------------讀取op_code錯誤-----------");
+        return ;
+    }
+    while(!feof(fp_r)) {
+         fscanf(fp_r, "%s", &reg1);
+        
+         printf("%s\n", reg1);
+    //     fprintf(fp_w, "%s\n",reg1);
+       }
+    fclose(fp_r);
+}
 int main(){
 char reg1[100], reg2[100], reg3[100];
-
-   FILE *fp_r = fopen("OP_code.txt", "r");
    FILE *fp_w = fopen("data_out.txt", "w");
-
-   if (fp_r == NULL)
-     return -1;
+    red_op_code();
 
    if (fp_w == NULL)
      return -1;
 
-   while(!feof(fp_r)) {
-     fscanf(fp_r, "%s %s %s", &reg1, &reg2, &reg3);
-     printf("%s %s %s\n", reg1, reg2, reg3);
-     fprintf(fp_w, "%s %s %s\n", reg3, reg2, reg1);
-   }
-
-   fclose(fp_r);
    fclose(fp_w);
  }
