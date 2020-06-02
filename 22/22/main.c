@@ -38,8 +38,12 @@ unsigned int Hash(char* str)//赫序加起來-star
     int i;
     for(i = 0;str[i]; i++)
     {
-        //       hash*=10;
-        hash += str[i];
+        
+        if (str[i]!=' '&&str[i]!='+') {//為了讓讀入不會因為空格跟+號出錯
+            hash*=10;
+            hash += str[i];
+        }
+        
     }
     return hash%OP_SIZE;
 }//赫序加起來-end
@@ -115,23 +119,26 @@ void test_print_op_code()//測試用看op_code對不對-start
         }
     }
 }//測試用看op_code對不對-end
-void red_srcpro()
+void red_srcpro()//讀題目-start
 {
     char reg1[100];
     FILE *fp_r = fopen("srcpro.txt", "r");
     
     while(!feof(fp_r)){//讀取資料
     fgets(&reg1,100, fp_r);
+        reg1[6]=';';//我打算用;來分隔
     printf("%s",reg1);
+        
     }
     fclose(fp_r);
-}
+}//讀題目-end
 int main(){
     char reg1[100], reg2[100], reg3[100];
     FILE *fp_w = fopen("data_out.txt", "w");
     init_op_cod_arr();
     red_op_code();
-    red_srcpro();
+//    red_srcpro();
+    printf("%d  %d",Hash("STL  "),Hash("STL"));
 //    test_print_op_code();//測試print_opOCD
     if (fp_w == NULL)
         return -1;
