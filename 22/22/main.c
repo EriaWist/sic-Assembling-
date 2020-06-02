@@ -18,7 +18,20 @@ struct op_code //存op_code_空間-star
     char op_cod[3];//實際的op碼
     struct op_code *next;//假如赫旭超過 預設為NULL
 }op_code[OP_SIZE];//存op_code_空間-end 大小為OP_SIZE
-
+struct srcpro{
+ char symname[11]; //symbom name
+ char exformat; //extent format-4
+ char opcode[10]; //Opcode
+ char optag; // (#, @, =
+ char optr_1[10]; //op-1
+ char optr; //+ - * /
+ char optr_2[10]; //op-2
+ int address;
+// Use use_block;
+ char str[50];
+ char destination[20];
+ struct srcpro *next;
+};
 unsigned int Hash(char* str)//赫序加起來-star
 {
     long int hash=0;
@@ -102,11 +115,23 @@ void test_print_op_code()//測試用看op_code對不對-start
         }
     }
 }//測試用看op_code對不對-end
+void red_srcpro()
+{
+    char reg1[100];
+    FILE *fp_r = fopen("srcpro.txt", "r");
+    
+    while(!feof(fp_r)){//讀取資料
+    fgets(&reg1,100, fp_r);
+    printf("%s",reg1);
+    }
+    fclose(fp_r);
+}
 int main(){
     char reg1[100], reg2[100], reg3[100];
     FILE *fp_w = fopen("data_out.txt", "w");
     init_op_cod_arr();
     red_op_code();
+    red_srcpro();
 //    test_print_op_code();//測試print_opOCD
     if (fp_w == NULL)
         return -1;
