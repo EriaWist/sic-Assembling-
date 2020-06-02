@@ -124,12 +124,12 @@ void red_srcpro()//讀題目-start
     char reg1[100];
     FILE *fp_r = fopen("srcpro.txt", "r");
     
-    while(!feof(fp_r)){//讀取資料
+    while(!feof(fp_r)){//讀取資料.開始
     fgets(&reg1,100, fp_r);
         reg1[6]=';';//我打算用;來分隔
     printf("%s",reg1);
         
-    }
+    }//讀取資料.結束
     fclose(fp_r);
 }//讀題目-end
 int main(){
