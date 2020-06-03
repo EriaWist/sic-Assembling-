@@ -19,18 +19,18 @@ struct op_code //存op_code_空間-star
     struct op_code *next;//假如赫旭超過 預設為NULL
 }op_code[OP_SIZE];//存op_code_空間-end 大小為OP_SIZE
 struct srcpro{
- char symname[11]; //symbom name
- char exformat; //extent format-4
- char opcode[10]; //Opcode
- char optag; // (#, @, =
- char optr_1[10]; //op-1
- char optr; //+ - * /
- char optr_2[10]; //op-2
- int address;
-// Use use_block;
- char str[50];
- char destination[20];
- struct srcpro *next;
+    char symname[11]; //symbom name
+    char exformat; //extent format-4
+    char opcode[10]; //Opcode
+    char optag; // (#, @, =
+    char optr_1[10]; //op-1
+    char optr; //+ - * /
+    char optr_2[10]; //op-2
+    int address;
+    // Use use_block;
+    char str[50];
+    char destination[20];
+    struct srcpro *next;
 };
 unsigned int Hash(char* str)//赫序加起來-star
 {
@@ -38,7 +38,6 @@ unsigned int Hash(char* str)//赫序加起來-star
     int i;
     for(i = 0;str[i]; i++)
     {
-        
         if (str[i]!=' '&&str[i]!='+') {//為了讓讀入不會因為空格跟+號出錯
             hash*=10;
             hash += str[i];
@@ -121,11 +120,11 @@ void test_print_op_code()//測試用看op_code對不對-start
 }//測試用看op_code對不對-end
 void red_srcpro()//讀題目-start
 {
-    char reg1[100];
+    char reg1[100],*substr=NULL;
     FILE *fp_r = fopen("srcpro.txt", "r");
     
     while(!feof(fp_r)){//讀取資料.開始
-    fgets(&reg1,100, fp_r);
+        fgets(&reg1,100, fp_r);
         //處理分割.開始
         if (reg1[6]==' ') {
             reg1[6]=';';//我打算用;來分隔 測資輸入為第七個是分隔空白
@@ -138,8 +137,13 @@ void red_srcpro()//讀題目-start
             strcpy(temap, &reg1[24]);//先暫存
             sprintf(&reg1[24], "%s%s",";",temap);
         }
+        substr = strtok(reg1, ";");//切割符號
         //處理分割.結束
-    printf("%s",reg1);
+        while (substr!=NULL) {
+            printf("%s",substr);
+            substr = strtok(NULL, ";");//切割符號
+        }
+        
         
     }//讀取資料.結束
     fclose(fp_r);
@@ -150,8 +154,8 @@ int main(){
     init_op_cod_arr();
     red_op_code();
     red_srcpro();
-//    printf("%d  %d",Hash("STL  "),Hash("STL"));赫緒測試
-//    test_print_op_code();//測試print_opOCD
+    //    printf("%d  %d",Hash("STL  "),Hash("STL"));赫緒測試
+    //    test_print_op_code();//測試print_opOCD
     if (fp_w == NULL)
         return -1;
     
