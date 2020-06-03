@@ -126,7 +126,19 @@ void red_srcpro()//讀題目-start
     
     while(!feof(fp_r)){//讀取資料.開始
     fgets(&reg1,100, fp_r);
-        reg1[6]=';';//我打算用;來分隔
+        //處理分割.開始
+        if (reg1[6]==' ') {
+            reg1[6]=';';//我打算用;來分隔 測資輸入為第七個是分隔空白
+        }
+        if (reg1[14]==' ') {
+            reg1[14]=';';//以及第14個為分隔空白
+        }
+        if (reg1[24]!='\0') {//利用sprint來插入字串
+            char temap[20];
+            strcpy(temap, &reg1[24]);//先暫存
+            sprintf(&reg1[24], "%s%s",";",temap);
+        }
+        //處理分割.結束
     printf("%s",reg1);
         
     }//讀取資料.結束
@@ -137,8 +149,8 @@ int main(){
     FILE *fp_w = fopen("data_out.txt", "w");
     init_op_cod_arr();
     red_op_code();
-//    red_srcpro();
-    printf("%d  %d",Hash("STL  "),Hash("STL"));
+    red_srcpro();
+//    printf("%d  %d",Hash("STL  "),Hash("STL"));赫緒測試
 //    test_print_op_code();//測試print_opOCD
     if (fp_w == NULL)
         return -1;
