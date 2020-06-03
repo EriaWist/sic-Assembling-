@@ -29,6 +29,7 @@ struct srcpro{
     char optr; //+ - * /
     char optr_2[10]; //op-2
     int address;
+    int address_size;
 }save_srcpro[MAX_Srcpro_SIZE];
 
 unsigned int Hash(char* str)//赫序加起來-star
@@ -179,7 +180,7 @@ void init_red_srcpro()//初始化以防意外
         save_srcpro[i].exformat=false;
     }
 }
-void test_print_srcpro()//測試輸出用-不重要
+void test_print_srcpro()//測試輸出用-star
 {
     int i;
     for (i=0; i<Srcpro_size-1; i++) {
@@ -209,7 +210,14 @@ void test_print_srcpro()//測試輸出用-不重要
         }
         printf("\n");
     }
-}
+}//測試輸出用-end
+void get_add_size ()//算每一條指令站多少byte-開始
+{
+    int i;
+    for (i=0; i<Srcpro_size-1; i++) {
+        <#statements#>
+    }
+}//算每一條指令站多少byte-結束
 int main(){
     char reg1[100], reg2[100], reg3[100];
     FILE *fp_w = fopen("data_out.txt", "w");
