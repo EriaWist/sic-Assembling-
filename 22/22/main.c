@@ -5,11 +5,13 @@
 //  Created by 阿騰 on 2020/5/22.
 //  Copyright © 2020 阿騰. All rights reserved.
 //
-
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #define OP_SIZE 11 //op_code陣列大小空間 Opcode space size
+#define MAX_Srcpro_SIZE 100 //指令行數的上限
+int Srcpro_size=0;
 struct op_code //存op_code_空間-star
 {
     char op_name[10];//op 名稱
@@ -20,25 +22,22 @@ struct op_code //存op_code_空間-star
 }op_code[OP_SIZE];//存op_code_空間-end 大小為OP_SIZE
 struct srcpro{
     char symname[11]; //symbom name
-    char exformat; //extent format-4
+    bool exformat; //extent format-4
     char opcode[10]; //Opcode
     char optag; // (#, @, =
     char optr_1[10]; //op-1
     char optr; //+ - * /
     char optr_2[10]; //op-2
     int address;
-    // Use use_block;
-    char str[50];
-    char destination[20];
-    struct srcpro *next;
-};
+}save_srcpro[MAX_Srcpro_SIZE];
+
 unsigned int Hash(char* str)//赫序加起來-star
 {
     long int hash=0;
     int i;
     for(i = 0;str[i]; i++)
     {
-        if (str[i]!=' '&&str[i]!='+') {//為了讓讀入不會因為空格跟+號出錯
+        if (str[i]!=' '&&str[i]!='+'&&str[i]!='#'&&str[i]!='@'&&str[i]!='='&&str[i]!='\n') {//為了讓讀入不會因為空格跟+號和#@=\n
             hash*=10;
             hash += str[i];
         }
@@ -57,7 +56,7 @@ void init_op_cod_arr()//初始化全域的op_code陣列-star
 struct op_code *create_note()
 {
     struct op_code * ptr;
-    ptr = malloc(sizeof(struct op_code));
+    ptr = (struct op_code *)malloc(sizeof(struct op_code));
     ptr->next =NULL;
     return ptr;
 }
@@ -94,8 +93,10 @@ void red_op_code()//讀op_code-star
         strcpy(ptr->op_format, substr);
         substr = strtok(NULL, ",");//切割op_code
         strcpy(ptr->op_cod, substr);
+        
     }
     fclose(fp_r);
+    
 }//讀op_code-end
 void test_print_op_code()//測試用看op_code對不對-start
 {
@@ -122,9 +123,13 @@ void red_srcpro()//讀題目-start
 {
     char reg1[100],*substr=NULL;
     FILE *fp_r = fopen("srcpro.txt", "r");
-    
+    int i = 0 ;
     while(!feof(fp_r)){//讀取資料.開始
         fgets(&reg1,100, fp_r);
+        
+        if(reg1[strlen(reg1) - 1] == '\n')
+        reg1[strlen(reg1) - 1] = '\0';
+        
         //處理分割.開始
         if (reg1[6]==' ') {
             reg1[6]=';';//我打算用;來分隔 測資輸入為第七個是分隔空白
@@ -139,23 +144,82 @@ void red_srcpro()//讀題目-start
         }
         substr = strtok(reg1, ";");//切割符號
         //處理分割.結束
-        while (substr!=NULL) {
-            printf("%s",substr);
+        
+        if (substr!=NULL) {//第一段
+            strcpy(save_srcpro[i].symname, substr);
             substr = strtok(NULL, ";");//切割符號
-        }
-        
-        
+        }//第一段
+       
+        if (substr!=NULL) {//第二段
+            if (substr[0]=='+') {
+                save_srcpro[i].exformat=true;
+            }
+            strcpy(save_srcpro[i].opcode, substr);
+            substr = strtok(NULL, ";");//切割符號
+        }//第二段
+        if (substr!=NULL) {//第三段
+            save_srcpro[i].optag=substr[0];
+            
+            strcpy(save_srcpro[i].optr_1, &substr[1]);
+            substr = strtok(NULL, ";");//切割符號
+        }//第三段
+        if (substr!=NULL) {//第四段
+            save_srcpro[i].optr=substr[0];
+            strcpy(save_srcpro[i].optr_2, &substr[1]);
+        }//第四段
+        i++;
     }//讀取資料.結束
     fclose(fp_r);
+    Srcpro_size = i;
 }//讀題目-end
+void init_red_srcpro()//初始化以防意外
+{
+    int i;
+    for (i=0; i<MAX_Srcpro_SIZE; i++) {
+        save_srcpro[i].exformat=false;
+    }
+}
+void test_print_srcpro()//測試輸出用-不重要
+{
+    int i;
+    for (i=0; i<Srcpro_size-1; i++) {
+        printf("%2d ",i);
+        char *temp;
+        
+        temp = save_srcpro[i].symname;
+        if (temp!=NULL) {
+            printf("%s",temp);
+        }
+        temp = save_srcpro[i].opcode;
+        if (temp!=NULL) {
+            printf("%s",temp);
+        }
+//        printf("%d",save_srcpro[i].exformat);//測試加號有沒有進
+        temp = save_srcpro[i].optr_1;
+        if (temp!=NULL) {
+            printf("%s",temp);
+        }
+        if (save_srcpro[i].optr!=NULL) {
+            printf("%c",save_srcpro[i].optr);
+        }
+        temp = save_srcpro[i].optr_2;
+        if (temp!=NULL) {
+//            printf("%c",save_srcpro[i].optr);
+            printf("%s",temp);
+        }
+        printf("\n");
+    }
+}
 int main(){
     char reg1[100], reg2[100], reg3[100];
     FILE *fp_w = fopen("data_out.txt", "w");
     init_op_cod_arr();
     red_op_code();
+//    test_print_op_code();//測試print_opOCD
+    init_red_srcpro();
     red_srcpro();
     //    printf("%d  %d",Hash("STL  "),Hash("STL"));赫緒測試
-    //    test_print_op_code();//測試print_opOCD
+    test_print_srcpro();
     if (fp_w == NULL)
         return -1;
     
