@@ -38,7 +38,7 @@ unsigned int Hash(char* str)//赫序加起來-star
     int i;
     for(i = 0;str[i]; i++)
     {
-        if (str[i]!=' '&&str[i]!='+'&&str[i]!='#'&&str[i]!='@'&&str[i]!='='&&str[i]!='\n') {//為了讓讀入不會因為空格跟+號和#@=\n
+        if (str[i]!=' '&&str[i]!='+'&&str[i]!='#'&&str[i]!='@'&&str[i]!='='&&str[i]!='\n'&&str[i]!='\r') {//為了讓讀入不會因為空格跟+號和#@=\n
             hash*=10;
             hash += str[i];
         }
@@ -130,7 +130,9 @@ void red_srcpro()//讀題目-start
         
         if(reg1[strlen(reg1) - 1] == '\n')
             reg1[strlen(reg1) - 1] = '\0';
-        
+        if (reg1[strlen(reg1) - 1] == '\r')
+            reg1[strlen(reg1) - 1] = '\0';
+        //坑-要把\r拿掉
         //處理分割.開始
         if (reg1[6]==' ') {
             reg1[6]=';';//我打算用;來分隔 測資輸入為第七個是分隔空白
@@ -224,8 +226,15 @@ int check_op_code(char *in_ptr)
 {
     int hash=Hash(in_ptr);
     struct op_code *ptr = &op_code[hash];
-    
-    do {
+    if (strcmp(in_ptr, ptr->op_name)==0) {
+        if (ptr->op_format[0]=='3') {
+            return 3;
+        } else {
+            return 2;
+        }
+    }
+    while (ptr->next!=NULL) {
+        ptr=ptr->next;
         if (strcmp(in_ptr, ptr->op_name)==0) {
             if (ptr->op_format[0]=='3') {
                 return 3;
@@ -233,11 +242,8 @@ int check_op_code(char *in_ptr)
                 return 2;
             }
         }
-        if (ptr->next!=NULL) {
-            ptr=ptr->next;
-        }
-    }while (ptr->next!=NULL);
-return -1;
+    }
+    return -1;
 }
 void get_address_size ()//算每一條指令站多少byte-開始
 {
@@ -289,10 +295,10 @@ int main(){
     FILE *fp_w = fopen("data_out.txt", "w");
     init_op_cod_arr();
     red_op_code();
-    //    test_print_op_code();//測試print_opOCD
+//        test_print_op_code();//測試print_opOCD
     init_red_srcpro();
     red_srcpro();
-    //    printf("%d  %d",Hash("STL  "),Hash("STL"));赫緒測試
+//        printf("%d  %d",Hash("RSUB  "),Hash("RSUB"));//赫緒測試
     //   test_print_srcpro();
     get_address_size();
     //測試區
