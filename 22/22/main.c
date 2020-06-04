@@ -129,7 +129,7 @@ void red_srcpro()//讀題目-start
         fgets(&reg1,100, fp_r);
         
         if(reg1[strlen(reg1) - 1] == '\n')
-        reg1[strlen(reg1) - 1] = '\0';
+            reg1[strlen(reg1) - 1] = '\0';
         
         //處理分割.開始
         if (reg1[6]==' ') {
@@ -150,12 +150,12 @@ void red_srcpro()//讀題目-start
             strcpy(save_srcpro[i].symname, substr);
             substr = strtok(NULL, ";");//切割符號
         }//第一段
-       
+        
         if (substr!=NULL) {//第二段
             if (substr[0]=='+') {
                 save_srcpro[i].exformat=true;
             }
-            strcpy(save_srcpro[i].opcode, substr);
+            strcpy(save_srcpro[i].opcode, &substr[1]);
             substr = strtok(NULL, ";");//切割符號
         }//第二段
         if (substr!=NULL) {//第三段
@@ -183,7 +183,7 @@ void init_red_srcpro()//初始化以防意外
 void test_print_srcpro()//測試輸出用-star
 {
     int i;
-    for (i=0; i<Srcpro_size-1; i++) {
+    for (i=0; i<Srcpro_size; i++) {
         printf("%2d ",i);
         char *temp;
         
@@ -192,30 +192,54 @@ void test_print_srcpro()//測試輸出用-star
             printf("%s",temp);
         }
         temp = save_srcpro[i].opcode;
+        if (save_srcpro[i].exformat) {// +
+            printf("+");
+        }else{
+            printf(" ");
+        }
         if (temp!=NULL) {
             printf("%s",temp);
         }
-//        printf("%d",save_srcpro[i].exformat);//測試加號有沒有進
+        if (save_srcpro[i].optag!=NULL) {// (#, @, =
+            printf("%c",save_srcpro[i].optag);
+        }else{
+            printf(" ");
+        }
         temp = save_srcpro[i].optr_1;
-        if (temp!=NULL) {
+        if (temp!=NULL) {//第三店
             printf("%s",temp);
         }
-        if (save_srcpro[i].optr!=NULL) {
+        if (save_srcpro[i].optr!=NULL) {//符號 + - * / ,
             printf("%c",save_srcpro[i].optr);
         }
         temp = save_srcpro[i].optr_2;
-        if (temp!=NULL) {
-//            printf("%c",save_srcpro[i].optr);
+        if (temp!=NULL) {//第四段
+            //            printf("%c",save_srcpro[i].optr);
             printf("%s",temp);
         }
         printf("\n");
     }
 }//測試輸出用-end
-void get_add_size ()//算每一條指令站多少byte-開始
+
+void get_address_size ()//算每一條指令站多少byte-開始
 {
     int i;
-    for (i=0; i<Srcpro_size-1; i++) {
-        <#statements#>
+    for (i=0; i<Srcpro_size; i++) {
+        char temp[100];//空白清除用
+        strcpy(temp, save_srcpro[i].opcode);//空白清除用
+        strtok(temp, " ");//空白清除用
+        if (strcmp(temp, "START")!=0) {
+            if (save_srcpro[i].exformat==true||strcmp(temp, "WORD")==0) {
+                save_srcpro[i].address_size=4;
+                printf("    %d",save_srcpro[i].address_size=4);
+            } else {
+                if (strcmp(temp, "WORD")==0) {
+                    
+                }
+            }
+        }
+        
+        
     }
 }//算每一條指令站多少byte-結束
 int main(){
@@ -223,11 +247,19 @@ int main(){
     FILE *fp_w = fopen("data_out.txt", "w");
     init_op_cod_arr();
     red_op_code();
-//    test_print_op_code();//測試print_opOCD
+    //    test_print_op_code();//測試print_opOCD
     init_red_srcpro();
     red_srcpro();
     //    printf("%d  %d",Hash("STL  "),Hash("STL"));赫緒測試
-    test_print_srcpro();
+        test_print_srcpro();
+    get_address_size();
+    //測試區
+    //    char *substr,temp[100];
+    //    strcpy(temp, save_srcpro[1].opcode);
+    //    substr = strtok(temp, " ");
+    //    printf("%s\n%s\n%s\n %d",temp,save_srcpro[1].opcode,op_code[Hash(save_srcpro[1].opcode)].op_name,strcmp(temp, op_code[Hash(save_srcpro[1].opcode)].op_name));
+    //測試區
+    
     if (fp_w == NULL)
         return -1;
     
