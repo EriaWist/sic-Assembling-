@@ -220,7 +220,25 @@ void test_print_srcpro()//測試輸出用-star
         printf("\n");
     }
 }//測試輸出用-end
-
+int check_op_code(char *in_ptr)
+{
+    int hash=Hash(in_ptr);
+    struct op_code *ptr = &op_code[hash];
+    
+    do {
+        if (strcmp(in_ptr, ptr->op_name)==0) {
+            if (ptr->op_format[0]=='3') {
+                return 3;
+            } else {
+                return 2;
+            }
+        }
+        if (ptr->next!=NULL) {
+            ptr=ptr->next;
+        }
+    }while (ptr->next!=NULL);
+return -1;
+}
 void get_address_size ()//算每一條指令站多少byte-開始
 {
     int i;
@@ -229,14 +247,38 @@ void get_address_size ()//算每一條指令站多少byte-開始
         strcpy(temp, save_srcpro[i].opcode);//空白清除用
         strtok(temp, " ");//空白清除用
         if (strcmp(temp, "START")!=0) {
-            if (save_srcpro[i].exformat==true||strcmp(temp, "WORD")==0) {
+            if (save_srcpro[i].exformat==true) {
                 save_srcpro[i].address_size=4;
-                printf("    %d",save_srcpro[i].address_size=4);
+                //                printf("%d ",save_srcpro[i].address_size=4);
+            } else if (strcmp(temp, "WORD")==0) {
+                save_srcpro[i].address_size=3;
+            } else if (strcmp(temp, "RESW")==0) {
+                save_srcpro[i].address_size=atoi(save_srcpro[i].optr_1)*3;
+                //                printf("%d ",save_srcpro[i].address_size);
+            } else if (strcmp(temp, "RESB")==0) {
+                save_srcpro[i].address_size=atoi(save_srcpro[i].optr_1);
+                //                                printf("%d ",save_srcpro[i].address_size);
+            } else if (strcmp(temp, "BYTE")==0) {
+                strcpy(temp, save_srcpro[i].optr_1);
+                strtok(temp, " ");
+                save_srcpro[i].address_size=strlen(temp)-4;
+                if (save_srcpro[i].optr_1[0]=='X') {
+                    save_srcpro[i].address_size/=2;
+                }
+                //                printf("%d %s",save_srcpro[i].address_size,temp);//當位置有問題可以看看
             } else {
-                if (strcmp(temp, "WORD")==0) {
-                    
+                int form=check_op_code(temp);
+                if(form!=-1)
+                {
+                    save_srcpro[i].address_size=form;
+                }
+                else
+                {
+                    printf("- %s -\n",temp);
                 }
             }
+            
+            
         }
         
         
@@ -251,7 +293,7 @@ int main(){
     init_red_srcpro();
     red_srcpro();
     //    printf("%d  %d",Hash("STL  "),Hash("STL"));赫緒測試
-        test_print_srcpro();
+    //   test_print_srcpro();
     get_address_size();
     //測試區
     //    char *substr,temp[100];
