@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#define OP_SIZE 11 //op_code陣列大小空間 Opcode space size
+#define HASH_SIZE 11 //op_code陣列大小空間 Opcode space size
 #define MAX_Srcpro_SIZE 100 //指令行數的上限
 #define MAX_block_locctr_SIZE 100//use空間表
 int Srcpro_size=0;
@@ -18,6 +18,13 @@ struct block_locctr//存use空間
     char block_name[10];
     int address;
 }block_locctr_arrary[MAX_block_locctr_SIZE];
+struct LTORG
+{
+    int address;
+    struct LTORG *next;
+    char name[10];
+    int isltorg;
+}LTORG_Arr[HASH_SIZE];
 struct op_code //存op_code_空間-star
 {
     char op_name[10];//op 名稱
@@ -25,7 +32,7 @@ struct op_code //存op_code_空間-star
     char op_format[5];//格式
     char op_cod[3];//實際的op碼
     struct op_code *next;//假如赫旭超過 預設為NULL
-}op_code[OP_SIZE];//存op_code_空間-end 大小為OP_SIZE
+}op_code[HASH_SIZE];//存op_code_空間-end 大小為HASH_SIZE
 struct srcpro{
     char symname[11]; //symbom name
     bool exformat; //extent format-4
@@ -37,6 +44,7 @@ struct srcpro{
     int address;
     int address_size;
     int use;
+    struct srcpro *next;
 }save_srcpro[MAX_Srcpro_SIZE];
 
 unsigned int Hash(char* str)//赫序加起來-star
@@ -51,12 +59,12 @@ unsigned int Hash(char* str)//赫序加起來-star
         }
         
     }
-    return hash%OP_SIZE;
+    return hash%HASH_SIZE;
 }//赫序加起來-end
 void init_op_cod_arr()//初始化全域的op_code陣列-star
 {
     int i;
-    for (i=0;i<OP_SIZE;i++) {
+    for (i=0;i<HASH_SIZE;i++) {
         op_code[i].next=NULL;
         strcpy(op_code[i].op_name, "NULL");
     }
@@ -110,7 +118,7 @@ void test_print_op_code()//測試用看op_code對不對-start
 {
     int i;
     struct op_code *ptr;
-    for (i=0; i<OP_SIZE; i++) {
+    for (i=0; i<HASH_SIZE; i++) {
         ptr = &op_code[i];
         if (strcmp(ptr->op_name, "NULL")!=0) {
             do {
@@ -254,8 +262,36 @@ int check_op_code(char *in_ptr)
 }
 void get_address_size ()//算每一條指令站多少byte-開始
 {
-    int i,use=0;
+    int i,use=0,sw=0,add_sw=0;
+    
     for (i=0; i<Srcpro_size; i++) {
+        sw=0;//這個是用在LTORG當到LTORG打開開關讓後續不多於處理地址
+        add_sw=0;//在添加時作為赫序表內有時打開
+        if (save_srcpro[i].optag=='=') {
+            int hash =Hash(save_srcpro[i].optr_1);
+            struct LTORG *ptr=&LTORG_Arr[hash];
+            if (strcmp(ptr->name, "NULL")==0) {
+                strcpy(ptr->name, save_srcpro[i].optr_1);
+                //                printf("%s\n",ptr->name);
+            } else {
+                while (ptr->next!=NULL) {
+                    ptr=ptr->next;
+                    if (strcmp(ptr->name, save_srcpro[i].optr_1)==0) {//赫序重複add_sw打開
+                        add_sw=1;
+                    }
+                }
+                if (add_sw==0) {
+                    ptr->next = malloc(sizeof(struct LTORG));
+                    ptr=ptr->next;
+                    ptr->next=NULL;
+                    strcpy(ptr->name, save_srcpro[i].optr_1);
+//                    printf("%s\n",ptr->name);
+                }
+            }
+            
+            
+            
+        }
         char temp[100];//空白清除用
         strcpy(temp, save_srcpro[i].opcode);//空白清除用
         strtok(temp, " ");//空白清除用
@@ -283,6 +319,23 @@ void get_address_size ()//算每一條指令站多少byte-開始
         } else if (strcmp(temp, "BASE")==0) {
             save_srcpro[i].address_size=0;
         } else if (strcmp(temp, "LTORG")==0) {
+            sw=1;
+            //            Srcpro_size++;
+            int j;
+            for (j=0; j<HASH_SIZE; j++) {
+                struct LTORG *ptr=&LTORG_Arr[j];
+                if (strcmp(ptr->name, "NULL")!=0) {//當不等於NULL
+                    ptr->address = block_locctr_arrary[use].address;
+                    block_locctr_arrary[use].address += strlen(ptr->name)-3;
+                    
+                    while (ptr->next!=NULL) {//未測試可能有安全隱患
+                        ptr=ptr->next;
+                        ptr->address = block_locctr_arrary[use].address;
+                        block_locctr_arrary[use].address += strlen(ptr->name)-3;
+                        printf("%s----\n",ptr->name);
+                    }
+                }
+            }
             save_srcpro[i].address_size=0;
         } else if (strcmp(temp, "EQU")==0) {
             save_srcpro[i].address_size=0;
@@ -314,9 +367,11 @@ void get_address_size ()//算每一條指令站多少byte-開始
                 //                    printf("- %s -\n",temp);
             }
         }
-        save_srcpro[i].address = block_locctr_arrary[use].address;
-        block_locctr_arrary[use].address += save_srcpro[i].address_size;
-//        printf("%d\n",block_locctr_arrary[use].address);
+        if (sw==0) {
+            save_srcpro[i].address = block_locctr_arrary[use].address;
+            block_locctr_arrary[use].address += save_srcpro[i].address_size;
+        }
+        
     }
     
 }//算每一條指令站多少byte-結束
@@ -328,11 +383,21 @@ void init_block()
         strcpy(block_locctr_arrary[i].block_name, "NULL");
     }
 }
+void init_LTORG_Arr()
+{
+    int i;
+    for (i=0; i<HASH_SIZE; i++) {
+        strcpy(LTORG_Arr[i].name, "NULL");
+        LTORG_Arr[i].next==NULL;
+        LTORG_Arr[i].isltorg=0;
+    }
+}
 int main(){
     char reg1[100], reg2[100], reg3[100];
     FILE *fp_w = fopen("data_out.txt", "w");
     init_op_cod_arr();
     red_op_code();
+    init_LTORG_Arr();
     //        test_print_op_code();//測試print_opOCD
     init_red_srcpro();
     red_srcpro();
