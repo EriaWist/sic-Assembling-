@@ -375,6 +375,10 @@ void get_address_size ()//算每一條指令站多少byte-開始
             block_locctr_arrary[use].address += save_srcpro[i].address_size;
         }
         
+        if (strcmp(save_srcpro[i].symname, "      ")!=0&&strcmp(save_srcpro[i].symname, "")!=0) {
+            printf("%d\n",i);
+        }
+        
     }
     
 }//算每一條指令站多少byte-結束
