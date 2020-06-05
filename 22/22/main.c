@@ -203,7 +203,7 @@ void test_print_srcpro()//測試輸出用-star
     for (i=0; i<Srcpro_size; i++) {
         printf("%2d ",i);
         char *temp;
-        printf("%5x ",save_srcpro[i].address);
+        printf("%04x ",save_srcpro[i].address);
         temp = save_srcpro[i].symname;
         if (temp!=NULL) {
             printf("%s",temp);
@@ -327,17 +327,20 @@ void get_address_size ()//算每一條指令站多少byte-開始
                 if (strcmp(ptr->name, "NULL")!=0) {//當不等於NULL
                     ptr->address = block_locctr_arrary[use].address;
                     block_locctr_arrary[use].address += strlen(ptr->name)-3;
-                    
+                    ptr->isltorg=1;
                     while (ptr->next!=NULL) {//未測試可能有安全隱患
                         ptr=ptr->next;
                         ptr->address = block_locctr_arrary[use].address;
                         block_locctr_arrary[use].address += strlen(ptr->name)-3;
+                        ptr->isltorg=1;
                         printf("%s----\n",ptr->name);
                     }
                 }
             }
             save_srcpro[i].address_size=0;
         } else if (strcmp(temp, "EQU")==0) {
+            
+            
             save_srcpro[i].address_size=0;
         } else if (strcmp(temp, "END")==0) {
             save_srcpro[i].address_size=0;
