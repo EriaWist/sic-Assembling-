@@ -11,7 +11,13 @@
 #include <string.h>
 #define OP_SIZE 11 //op_code陣列大小空間 Opcode space size
 #define MAX_Srcpro_SIZE 100 //指令行數的上限
+#define MAX_block_locctr_SIZE 100//use空間表
 int Srcpro_size=0;
+struct block_locctr//存use空間
+{
+    char block_name[10];
+    int address;
+}block_locctr_arrary[MAX_block_locctr_SIZE];
 struct op_code //存op_code_空間-star
 {
     char op_name[10];//op 名稱
@@ -30,6 +36,7 @@ struct srcpro{
     char optr_2[10]; //op-2
     int address;
     int address_size;
+    int use;
 }save_srcpro[MAX_Srcpro_SIZE];
 
 unsigned int Hash(char* str)//赫序加起來-star
@@ -188,7 +195,7 @@ void test_print_srcpro()//測試輸出用-star
     for (i=0; i<Srcpro_size; i++) {
         printf("%2d ",i);
         char *temp;
-        
+        printf("%5x ",save_srcpro[i].address);
         temp = save_srcpro[i].symname;
         if (temp!=NULL) {
             printf("%s",temp);
@@ -247,60 +254,93 @@ int check_op_code(char *in_ptr)
 }
 void get_address_size ()//算每一條指令站多少byte-開始
 {
-    int i;
+    int i,use=0;
     for (i=0; i<Srcpro_size; i++) {
         char temp[100];//空白清除用
         strcpy(temp, save_srcpro[i].opcode);//空白清除用
         strtok(temp, " ");//空白清除用
-        if (strcmp(temp, "START")!=0) {
-            if (save_srcpro[i].exformat==true) {
-                save_srcpro[i].address_size=4;
-                //                printf("%d ",save_srcpro[i].address_size=4);
-            } else if (strcmp(temp, "WORD")==0) {
-                save_srcpro[i].address_size=3;
-            } else if (strcmp(temp, "RESW")==0) {
-                save_srcpro[i].address_size=atoi(save_srcpro[i].optr_1)*3;
-                //                printf("%d ",save_srcpro[i].address_size);
-            } else if (strcmp(temp, "RESB")==0) {
-                save_srcpro[i].address_size=atoi(save_srcpro[i].optr_1);
-                //                                printf("%d ",save_srcpro[i].address_size);
-            } else if (strcmp(temp, "BYTE")==0) {
-                strcpy(temp, save_srcpro[i].optr_1);
-                strtok(temp, " ");
-                save_srcpro[i].address_size=strlen(temp)-4;
-                if (save_srcpro[i].optr_1[0]=='X') {
-                    save_srcpro[i].address_size/=2;
-                }
-                //                printf("%d %s",save_srcpro[i].address_size,temp);//當位置有問題可以看看
-            } else {
-                int form=check_op_code(temp);
-                if(form!=-1)
-                {
-                    save_srcpro[i].address_size=form;
-                }
-                else
-                {
-                    printf("- %s -\n",temp);
+        if (strcmp(temp, "START")==0) {
+            save_srcpro[i].address_size=0;
+        } else if (save_srcpro[i].exformat==true) {
+            save_srcpro[i].address_size=4;
+            //                printf("%d ",save_srcpro[i].address_size=4);
+        } else if (strcmp(temp, "WORD")==0) {
+            save_srcpro[i].address_size=3;
+        } else if (strcmp(temp, "RESW")==0) {
+            save_srcpro[i].address_size=atoi(save_srcpro[i].optr_1)*3;
+            //                printf("%d ",save_srcpro[i].address_size);
+        } else if (strcmp(temp, "RESB")==0) {
+            save_srcpro[i].address_size=atoi(save_srcpro[i].optr_1);
+            //                                printf("%d ",save_srcpro[i].address_size);
+        } else if (strcmp(temp, "BYTE")==0) {
+            strcpy(temp, save_srcpro[i].optr_1);
+            strtok(temp, " ");
+            save_srcpro[i].address_size=strlen(temp)-3;
+            if (save_srcpro[i].optr_1[0]=='X') {
+                save_srcpro[i].address_size/=2;
+            }
+            //                printf("%d %s",save_srcpro[i].address_size,temp);//當位置有問題可以看看
+        } else if (strcmp(temp, "BASE")==0) {
+            save_srcpro[i].address_size=0;
+        } else if (strcmp(temp, "LTORG")==0) {
+            save_srcpro[i].address_size=0;
+        } else if (strcmp(temp, "EQU")==0) {
+            save_srcpro[i].address_size=0;
+        } else if (strcmp(temp, "END")==0) {
+            save_srcpro[i].address_size=0;
+        } else if (strcmp(temp, "USE")==0){
+            int j=0,bool_block=0;
+            while (strcmp(block_locctr_arrary[j++].block_name, "NULL")) {
+                if (strcmp(save_srcpro[i].optr_1, block_locctr_arrary[j].block_name)) {
+                    use = j;
+                    save_srcpro[i].use=j;
+                    bool_block=1;
                 }
             }
-            
-            
+            if (bool_block==1) {
+                strcpy(block_locctr_arrary[j-1].block_name, save_srcpro[i].optr_1);
+                use = j-1;
+                save_srcpro[i].use=j-1;
+            }
+        } else {
+            int form=check_op_code(temp);
+            if(form!=-1)
+            {
+                save_srcpro[i].address_size=form;
+            }
+            else
+            {
+                save_srcpro[i].address_size=0;
+                //                    printf("- %s -\n",temp);
+            }
         }
-        
-        
+        save_srcpro[i].address = block_locctr_arrary[use].address;
+        block_locctr_arrary[use].address += save_srcpro[i].address_size;
+//        printf("%d\n",block_locctr_arrary[use].address);
     }
+    
 }//算每一條指令站多少byte-結束
+
+void init_block()
+{
+    int i;
+    for (i=0; i<MAX_block_locctr_SIZE; i++) {
+        strcpy(block_locctr_arrary[i].block_name, "NULL");
+    }
+}
 int main(){
     char reg1[100], reg2[100], reg3[100];
     FILE *fp_w = fopen("data_out.txt", "w");
     init_op_cod_arr();
     red_op_code();
-//        test_print_op_code();//測試print_opOCD
+    //        test_print_op_code();//測試print_opOCD
     init_red_srcpro();
     red_srcpro();
-//        printf("%d  %d",Hash("RSUB  "),Hash("RSUB"));//赫緒測試
-    //   test_print_srcpro();
+    //        printf("%d  %d",Hash("RSUB  "),Hash("RSUB"));//赫緒測試
+    
     get_address_size();
+    
+    test_print_srcpro();
     //測試區
     //    char *substr,temp[100];
     //    strcpy(temp, save_srcpro[1].opcode);
