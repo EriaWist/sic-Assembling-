@@ -24,7 +24,12 @@ struct LTORG
     struct LTORG *next;
     char name[10];
     int isltorg;
+    int use;
 }LTORG_Arr[HASH_SIZE];
+struct symname
+{
+    
+};
 struct op_code //存op_code_空間-star
 {
     char op_name[10];//op 名稱
@@ -328,11 +333,13 @@ void get_address_size ()//算每一條指令站多少byte-開始
                     ptr->address = block_locctr_arrary[use].address;
                     block_locctr_arrary[use].address += strlen(ptr->name)-3;
                     ptr->isltorg=1;
+                    ptr->use=use;
                     while (ptr->next!=NULL) {//未測試可能有安全隱患
                         ptr=ptr->next;
                         ptr->address = block_locctr_arrary[use].address;
                         block_locctr_arrary[use].address += strlen(ptr->name)-3;
                         ptr->isltorg=1;
+                        ptr->use=use;
                         printf("%s----\n",ptr->name);
                     }
                 }
@@ -343,7 +350,34 @@ void get_address_size ()//算每一條指令站多少byte-開始
             
             save_srcpro[i].address_size=0;
         } else if (strcmp(temp, "END")==0) {
+            sw=1;
             save_srcpro[i].address_size=0;
+            save_srcpro[i].address = block_locctr_arrary[use].address;
+            block_locctr_arrary[use].address += save_srcpro[i].address_size;
+            int j;
+            for (j=0; j<HASH_SIZE; j++) {
+                struct LTORG *ptr=&LTORG_Arr[j];
+                if (strcmp(ptr->name, "NULL")!=0) {//當不等於NULL
+                    if (ptr->isltorg!=1) {
+                        ptr->address = block_locctr_arrary[use].address;
+                        block_locctr_arrary[use].address += strlen(ptr->name)-3;
+                        ptr->isltorg=0;
+                        ptr->use=use;
+                    }
+                    while (ptr->next!=NULL) {//未測試可能有安全隱患
+                        ptr=ptr->next;
+                        if (ptr->isltorg!=1) {
+                        ptr->address = block_locctr_arrary[use].address;
+                        block_locctr_arrary[use].address += strlen(ptr->name)-3;
+                        ptr->isltorg=0;
+                        ptr->use=use;
+                        printf("%s----\n",ptr->name);
+                        }
+                    }
+                }
+            }
+            
+            
         } else if (strcmp(temp, "USE")==0){
             int j=0,bool_block=0;
             while (strcmp(block_locctr_arrary[j++].block_name, "NULL")) {
