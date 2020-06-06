@@ -1,4 +1,5 @@
 
+
 //
 //  main.c
 //  22
@@ -33,6 +34,7 @@ struct symname
     char name[10];
     int use;
     struct symname *next;
+    int content;//內容假如有
 } symname_arr[HASH_SIZE];
 struct op_code //存op_code_空間-star
 {
@@ -358,6 +360,7 @@ int check_op_code(char *in_ptr)
     }
     return -1;
 }
+
 void get_address_size ()//算每一條指令站多少byte-開始
 {
     int i,use=0,sw=0,add_sw=0;
@@ -391,7 +394,7 @@ void get_address_size ()//算每一條指令站多少byte-開始
                     ptr=ptr->next;
                     ptr->next=NULL;
                     strcpy(ptr->name, save_srcpro[i].optr_1);
-//                    printf("%s\n",ptr->name);
+                    //                    printf("%s\n",ptr->name);
                 }
             }
 
@@ -469,9 +472,84 @@ void get_address_size ()//算每一條指令站多少byte-開始
         }
         else if (strcmp(temp, "EQU")==0)
         {
-
-
+            sw=1;
             save_srcpro[i].address_size=0;
+            if (strcmp(save_srcpro[i].optr_1, "*")==0)
+            {
+                 save_srcpro[i].address = block_locctr_arrary[use].address;
+                block_locctr_arrary[use].address += save_srcpro[i].address_size;
+                    int hash=Hash(save_srcpro[i].optr_1);
+                    struct symname *ptr=&symname_arr[hash];
+                    if (strcmp(save_srcpro[i].symname, ptr->name)==0)
+                    {
+                        ptr->content=save_srcpro[i].address;
+                    }
+                    while (ptr->next!=NULL)
+                    {
+                        ptr=ptr->next;
+                        if (strcmp(save_srcpro[i].symname, ptr->name)==0)
+                        {
+                           ptr->content=save_srcpro[i].address;
+                        }
+                    }
+
+            }
+            else
+            {
+
+                int hash;
+                int op_1,op_2;
+                if (atoi(save_srcpro[i].optr_1)!=0)
+                {
+                    op_1=atoi(save_srcpro[i].optr_1);
+                }
+                else
+                {
+                    hash=Hash(save_srcpro[i].optr_1);
+                    struct symname *ptr=&symname_arr[hash];
+                    if (strcmp(save_srcpro[i].optr_1, ptr->name)==0)
+                    {
+                        op_1=ptr->address;//沒處理use
+                    }
+                    while (ptr->next!=NULL)
+                    {
+                        ptr=ptr->next;
+                        if (strcmp(save_srcpro[i].optr_1, ptr->name)==0)
+                        {
+                            op_1=ptr->address;//沒處理use
+                        }
+                    }
+                }
+                if (save_srcpro[i].optr!= "")
+                {
+                    hash=Hash(save_srcpro[i].optr_2);
+                    struct symname *ptr=&symname_arr[hash];
+                    if (strcmp(save_srcpro[i].optr_2, ptr->name)==0)
+                    {
+                        op_2=ptr->address;//沒處理use
+                    }
+                    while (ptr->next!=NULL)
+                    {
+                        ptr=ptr->next;
+                        if (strcmp(save_srcpro[i].optr_2, ptr->name)==0)
+                        {
+                            op_2=ptr->address;//沒處理use
+                        }
+                    }
+                    if (save_srcpro[i].optr!= "-")
+                    {
+
+                        save_srcpro[i].address=op_1=op_2;
+                    }
+                }
+                else
+                {
+
+                }
+
+            }
+
+
         }
         else if (strcmp(temp, "END")==0)
         {
@@ -553,6 +631,7 @@ void get_address_size ()//算每一條指令站多少byte-開始
             if(strcmp(ptr->name,"NULL")==0)
             {
                 strcpy(ptr->name,save_srcpro[i].symname);
+                ptr->content=atoi(save_srcpro[i].optr_1);
                 ptr->address=save_srcpro[i].address;
                 ptr->use=use;
             }
@@ -565,6 +644,7 @@ void get_address_size ()//算每一條指令站多少byte-開始
                 ptr->next=(struct symname*)malloc(sizeof(struct symname));
                 ptr=ptr->next;
                 strcpy(ptr->name,save_srcpro[i].symname);
+                ptr->content=atoi(save_srcpro[i].optr_1);
                 ptr->use=use;
                 ptr->address=save_srcpro[i].address;
                 ptr->next=NULL;
