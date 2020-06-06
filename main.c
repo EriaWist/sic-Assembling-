@@ -33,7 +33,7 @@ struct symname
     char name[10];
     int use;
     struct symname *next;
-}symname_arr[HASH_SIZE];
+} symname_arr[HASH_SIZE];
 struct op_code //存op_code_空間-star
 {
     char op_name[10];//op 名稱
@@ -501,7 +501,6 @@ void get_address_size ()//算每一條指令站多少byte-開始
                             block_locctr_arrary[use].address += strlen(ptr->name)-3;
                             ptr->isltorg=0;
                             ptr->use=use;
-                            printf("%s----\n",ptr->name);
                         }
                     }
                 }
@@ -555,14 +554,21 @@ void get_address_size ()//算每一條指令站多少byte-開始
             {
                 strcpy(ptr->name,save_srcpro[i].symname);
                 ptr->address=save_srcpro[i].address;
+                ptr->use=use;
             }
-            while(ptr->next!=NULL)
+            else
             {
+                while(ptr->next!=NULL)
+                {
+                    ptr=ptr->next;
+                }
+                ptr->next=(struct symname*)malloc(sizeof(struct symname));
                 ptr=ptr->next;
-            }
-            strcpy(ptr->name,save_srcpro[i].symname);
+                strcpy(ptr->name,save_srcpro[i].symname);
+                ptr->use=use;
                 ptr->address=save_srcpro[i].address;
                 ptr->next=NULL;
+            }
         }
 
     }
@@ -590,12 +596,32 @@ void init_LTORG_Arr()
 void init_symname ()
 {
     int i;
-    for(i=0;i<HASH_SIZE;i++)
+    for(i=0; i<HASH_SIZE; i++)
     {
         strcpy(symname_arr[i].name, "NULL");
         symname_arr[i].next==NULL;
         symname_arr[i].use=0;
     }
+}
+void priint_symname()
+{
+    int i;
+
+    printf("name  use address\n");
+    for(i=0; i<HASH_SIZE; i++)
+    {
+        struct symname *ptr = &symname_arr[i];
+        if(strcmp(ptr->name,"NULL"))
+        {
+            printf("%s %d  %x\n",ptr->name,ptr->use,ptr->address);
+        }
+        while(ptr->next!=NULL)
+        {
+            ptr=ptr->next;
+            printf("%s %d  %x\n",ptr->name,ptr->use,ptr->address);
+        }
+    }
+
 }
 int main()
 {
@@ -613,6 +639,7 @@ int main()
     get_address_size();
 
     test_print_srcpro();
+    priint_symname();
     //測試區
     //    char *substr,temp[100];
     //    strcpy(temp, save_srcpro[1].opcode);
