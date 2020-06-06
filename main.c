@@ -29,8 +29,11 @@ struct LTORG
 } LTORG_Arr[HASH_SIZE];
 struct symname
 {
-
-};
+    int address;
+    char name[10];
+    int use;
+    struct symname *next;
+}symname_arr[HASH_SIZE];
 struct op_code //存op_code_空間-star
 {
     char op_name[10];//op 名稱
@@ -546,7 +549,20 @@ void get_address_size ()//算每一條指令站多少byte-開始
 
         if (strcmp(save_srcpro[i].symname, "      ")!=0&&strcmp(save_srcpro[i].symname, "")!=0)
         {
-            printf("%d\n",i);
+            int stname_hash =Hash(save_srcpro[i].symname);
+            struct symname *ptr= &symname_arr[stname_hash];
+            if(strcmp(ptr->name,"NULL")==0)
+            {
+                strcpy(ptr->name,save_srcpro[i].symname);
+                ptr->address=save_srcpro[i].address;
+            }
+            while(ptr->next!=NULL)
+            {
+                ptr=ptr->next;
+            }
+            strcpy(ptr->name,save_srcpro[i].symname);
+                ptr->address=save_srcpro[i].address;
+                ptr->next=NULL;
         }
 
     }
@@ -571,10 +587,21 @@ void init_LTORG_Arr()
         LTORG_Arr[i].isltorg=0;
     }
 }
+void init_symname ()
+{
+    int i;
+    for(i=0;i<HASH_SIZE;i++)
+    {
+        strcpy(symname_arr[i].name, "NULL");
+        symname_arr[i].next==NULL;
+        symname_arr[i].use=0;
+    }
+}
 int main()
 {
     char reg1[100], reg2[100], reg3[100];
     FILE *fp_w = fopen("data_out.txt", "w");
+    init_symname ();
     init_op_cod_arr();
     red_op_code();
     init_LTORG_Arr();
