@@ -472,7 +472,7 @@ void get_address_size ()//算每一條指令站多少byte-開始
         }
         else if (strcmp(temp, "EQU")==0)
         {
-            sw=1;
+
         }
         else if (strcmp(temp, "END")==0)
         {
@@ -601,10 +601,10 @@ int i;
                         if (strcmp(save_srcpro[i].symname, ptr->name)==0)
                         {
                            ptr->content=save_srcpro[i].address;
-                           printf("%x------",ptr->content);
+                           printf("%d------",save_srcpro[i].address);
                         }
                     }
-                    printf("%x------",ptr->content);
+
             }
             else
             {
@@ -649,7 +649,7 @@ int i;
                     {
 
                         save_srcpro[i].address=op_1-op_2;
-                        printf("%x\n",op_1);
+                        //printf("%x\n",op_1);
                     }
                 }
                 else
