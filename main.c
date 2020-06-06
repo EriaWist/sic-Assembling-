@@ -613,12 +613,12 @@ void priint_symname()
         struct symname *ptr = &symname_arr[i];
         if(strcmp(ptr->name,"NULL"))
         {
-            printf("%s %d  %x\n",ptr->name,ptr->use,ptr->address);
+            printf("%s %d  %04x\n",ptr->name,ptr->use,ptr->address);
         }
         while(ptr->next!=NULL)
         {
             ptr=ptr->next;
-            printf("%s %d  %x\n",ptr->name,ptr->use,ptr->address);
+            printf("%s %d  %04x\n",ptr->name,ptr->use,ptr->address);
         }
     }
 
