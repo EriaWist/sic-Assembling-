@@ -336,6 +336,8 @@ void get_address_size ()//算每一條指令站多少byte-開始
         } else if (strcmp(temp, "BASE")==0) {
             save_srcpro[i].address_size=0;
         } else if (strcmp(temp, "LTORG")==0) {
+            save_srcpro[i].address = block_locctr_arrary[use].address;
+            block_locctr_arrary[use].address += save_srcpro[i].address_size;
             sw=1;
             //            Srcpro_size++;
             int j;
