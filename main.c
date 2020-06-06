@@ -726,7 +726,12 @@ int main()
     get_address_size();
 
     test_print_srcpro();
+
+    equ();
+
     priint_symname();
+
+
     //測試區
     //    char *substr,temp[100];
     //    strcpy(temp, save_srcpro[1].opcode);
