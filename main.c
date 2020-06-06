@@ -601,7 +601,7 @@ int i;
                         if (strcmp(save_srcpro[i].symname, ptr->name)==0)
                         {
                            ptr->content=save_srcpro[i].address;
-                           printf("%d------",save_srcpro[i].address);
+                           printf("%d------",ptr->content);
                         }
                     }
 
@@ -660,6 +660,7 @@ int i;
             }
 
 
+
         }
 }
 void init_block()
@@ -700,12 +701,12 @@ void priint_symname()
         struct symname *ptr = &symname_arr[i];
         if(strcmp(ptr->name,"NULL"))
         {
-            printf("%s %d  %04x %d %d\n",ptr->name,ptr->use,ptr->address,i,ptr->content);
+            printf("%s %d  %04x %d %x\n",ptr->name,ptr->use,ptr->address,i,ptr->content);
         }
         while(ptr->next!=NULL)
         {
             ptr=ptr->next;
-            printf("%s %d  %04x %d %d\n",ptr->name,ptr->use,ptr->address,i,ptr->content);
+            printf("%s %d  %04x %d %x\n",ptr->name,ptr->use,ptr->address,i,ptr->content);
         }
     }
 
