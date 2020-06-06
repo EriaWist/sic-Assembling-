@@ -206,6 +206,10 @@ void test_print_srcpro()//測試輸出用-star
 {
     int i;
     for (i=0; i<Srcpro_size; i++) {
+        if (strcmp(save_srcpro[i].opcode,"LTORG ")==0) {
+            printf("\n   1234");
+            printf("\n");
+        }
         printf("%2d ",i);
         char *temp;
         printf("%04x ",save_srcpro[i].address);
