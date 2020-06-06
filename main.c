@@ -473,83 +473,6 @@ void get_address_size ()//算每一條指令站多少byte-開始
         else if (strcmp(temp, "EQU")==0)
         {
             sw=1;
-            save_srcpro[i].address_size=0;
-            if (strcmp(save_srcpro[i].optr_1, "*")==0)
-            {
-                 save_srcpro[i].address = block_locctr_arrary[use].address;
-                block_locctr_arrary[use].address += save_srcpro[i].address_size;
-                    int hash=Hash(save_srcpro[i].optr_1);
-                    struct symname *ptr=&symname_arr[hash];
-                    if (strcmp(save_srcpro[i].symname, ptr->name)==0)
-                    {
-                        ptr->content=save_srcpro[i].address;
-                    }
-                    while (ptr->next!=NULL)
-                    {
-                        ptr=ptr->next;
-                        if (strcmp(save_srcpro[i].symname, ptr->name)==0)
-                        {
-                           ptr->content=save_srcpro[i].address;
-                        }
-                    }
-
-            }
-            else
-            {
-
-                int hash;
-                int op_1,op_2;
-                if (atoi(save_srcpro[i].optr_1)!=0)
-                {
-                    op_1=atoi(save_srcpro[i].optr_1);
-                }
-                else
-                {
-                    hash=Hash(save_srcpro[i].optr_1);
-                    struct symname *ptr=&symname_arr[hash];
-                    if (strcmp(save_srcpro[i].optr_1, ptr->name)==0)
-                    {
-                        op_1=ptr->address;//沒處理use
-                    }
-                    while (ptr->next!=NULL)
-                    {
-                        ptr=ptr->next;
-                        if (strcmp(save_srcpro[i].optr_1, ptr->name)==0)
-                        {
-                            op_1=ptr->address;//沒處理use
-                        }
-                    }
-                }
-                if (save_srcpro[i].optr!= "")
-                {
-                    hash=Hash(save_srcpro[i].optr_2);
-                    struct symname *ptr=&symname_arr[hash];
-                    if (strcmp(save_srcpro[i].optr_2, ptr->name)==0)
-                    {
-                        op_2=ptr->address;//沒處理use
-                    }
-                    while (ptr->next!=NULL)
-                    {
-                        ptr=ptr->next;
-                        if (strcmp(save_srcpro[i].optr_2, ptr->name)==0)
-                        {
-                            op_2=ptr->address;//沒處理use
-                        }
-                    }
-                    if (save_srcpro[i].optr!= "-")
-                    {
-
-                        save_srcpro[i].address=op_1=op_2;
-                    }
-                }
-                else
-                {
-
-                }
-
-            }
-
-
         }
         else if (strcmp(temp, "END")==0)
         {
@@ -655,6 +578,90 @@ void get_address_size ()//算每一條指令站多少byte-開始
 
 }//算每一條指令站多少byte-結束
 
+void equ()
+{
+
+int i;
+    for (i=0; i<Srcpro_size; i++)
+    {
+            save_srcpro[i].address_size=0;
+            if (strcmp(save_srcpro[i].optr_1, "*")==0)
+            {
+                    int hash=Hash(save_srcpro[i].symname);
+                    struct symname *ptr=&symname_arr[hash];
+                    printf("%s %s %d\n",save_srcpro[i].symname,ptr->name,hash);
+                    if (strcmp(save_srcpro[i].symname, ptr->name)==0)
+                    {
+                        ptr->content=save_srcpro[i].address;
+                        printf("%x------",ptr->content);
+                    }
+                    while (ptr->next!=NULL)
+                    {
+                        ptr=ptr->next;
+                        if (strcmp(save_srcpro[i].symname, ptr->name)==0)
+                        {
+                           ptr->content=save_srcpro[i].address;
+                           printf("%x------",ptr->content);
+                        }
+                    }
+                    printf("%x------",ptr->content);
+            }
+            else
+            {
+
+                int hash;
+                int op_1,op_2;
+
+
+                    hash=Hash(save_srcpro[i].optr_1);
+                    struct symname *ptr=&symname_arr[hash];
+                    if (strcmp(save_srcpro[i].optr_1, ptr->name)==0)
+                    {
+                        op_1=ptr->content;//沒處理use
+                    }
+                    while (ptr->next!=NULL)
+                    {
+                        ptr=ptr->next;
+                        if (strcmp(save_srcpro[i].optr_1, ptr->name)==0)
+                        {
+                            op_1=ptr->content;//沒處理use
+                        }
+                    }
+
+
+                if (save_srcpro[i].optr!= "")
+                {
+                    hash=Hash(save_srcpro[i].optr_2);
+                    struct symname *ptr=&symname_arr[hash];
+                    if (strcmp(save_srcpro[i].optr_2, ptr->name)==0)
+                    {
+                        op_2=ptr->content;//沒處理use
+                    }
+                    while (ptr->next!=NULL)
+                    {
+                        ptr=ptr->next;
+                        if (strcmp(save_srcpro[i].optr_2, ptr->name)==0)
+                        {
+                            op_2=ptr->content;//沒處理use
+                        }
+                    }
+                    if (save_srcpro[i].optr!= "-")
+                    {
+
+                        save_srcpro[i].address=op_1-op_2;
+                        printf("%x\n",op_1);
+                    }
+                }
+                else
+                {
+
+                }
+
+            }
+
+
+        }
+}
 void init_block()
 {
     int i;
@@ -687,18 +694,18 @@ void priint_symname()
 {
     int i;
 
-    printf("name  use address\n");
+    printf("name  use address Hash\n");
     for(i=0; i<HASH_SIZE; i++)
     {
         struct symname *ptr = &symname_arr[i];
         if(strcmp(ptr->name,"NULL"))
         {
-            printf("%s %d  %04x\n",ptr->name,ptr->use,ptr->address);
+            printf("%s %d  %04x %d %d\n",ptr->name,ptr->use,ptr->address,i,ptr->content);
         }
         while(ptr->next!=NULL)
         {
             ptr=ptr->next;
-            printf("%s %d  %04x\n",ptr->name,ptr->use,ptr->address);
+            printf("%s %d  %04x %d %d\n",ptr->name,ptr->use,ptr->address,i,ptr->content);
         }
     }
 
