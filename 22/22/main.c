@@ -475,8 +475,14 @@ void get_address_size ()//算每一條指令站多少byte-開始
             if (strcmp(save_srcpro[i].optr_1, "*")==0) {
                 sw=0;
             } else {
-                int hash=Hash(save_srcpro[i].optr_1);
+                
+                int hash;
                 int op_1,op_2;
+                if (atoi(save_srcpro[i].optr_1)!=0) {
+                    op_1=atoi(save_srcpro[i].optr_1)!=0;
+                }
+                else{
+                hash=Hash(save_srcpro[i].optr_1);
                 struct symname *ptr=&symname_arr[hash];
                 if (strcmp(save_srcpro[i].optr_1, ptr->name)==0) {
                     op_1=ptr->address;//沒處理use
@@ -486,6 +492,7 @@ void get_address_size ()//算每一條指令站多少byte-開始
                     if (strcmp(save_srcpro[i].optr_1, ptr->name)==0) {
                         op_1=ptr->address;//沒處理use
                     }
+                }
                 }
                 if (save_srcpro[i].optr!= "") {
                     hash=Hash(save_srcpro[i].optr_2);
