@@ -621,7 +621,8 @@ void equ()
 
                     hash=Hash(save_srcpro[i].symname);//直接用當前符號查
                     struct symname *ptr=&symname_arr[hash];
-                    if (strcmp(save_srcpro[i].symname, ptr->name)==0)
+
+                    if (strcmp(temp, ptr->name)==0)
                     {
 
 
@@ -634,7 +635,7 @@ void equ()
                     while (ptr->next!=NULL)
                     {
                         ptr=ptr->next;
-                        if (strcmp(save_srcpro[i].symname, ptr->name)==0)
+                        if (strcmp(temp, ptr->name)==0)
                         {
                             op_1=atoi(save_srcpro[i].optr_1);
                             if (save_srcpro[i].optr=="")
@@ -646,9 +647,13 @@ void equ()
                 }
                 else
                 {
+                    char EQU_op1_temp[100];//空白清除用
+                        strcpy(EQU_op1_temp,save_srcpro[i].optr_1);//空白清除用
+                        strtok(EQU_op1_temp, " ");//空白清除用
+
                     hash=Hash(save_srcpro[i].optr_1);//因為放者其他符號所以查詢其他符號
                     struct symname *ptr=&symname_arr[hash];
-                    if (strcmp(save_srcpro[i].optr_1, ptr->name)==0)
+                    if (strcmp(EQU_op1_temp, ptr->name)==0)
                     {
                         op_1=ptr->address;
                         if (save_srcpro[i].optr=="")
@@ -659,7 +664,7 @@ void equ()
                     while (ptr->next!=NULL)
                     {
                         ptr=ptr->next;
-                        if (strcmp(save_srcpro[i].optr_1, ptr->name)==0)
+                        if (strcmp(EQU_op1_temp, ptr->name)==0)
                         {
                             op_1=ptr->address;
                             if (save_srcpro[i].optr=="")
@@ -681,7 +686,7 @@ void equ()
                     {
                         hash=Hash(save_srcpro[i].symname);//直接用當前符號查
                         ptr=&symname_arr[hash];
-                        if (strcmp(save_srcpro[i].symname, ptr->name)==0)
+                        if (strcmp(temp, ptr->name)==0)
                         {
 
                             op_2=atoi(save_srcpro[i].optr_2);
@@ -689,7 +694,7 @@ void equ()
                         while (ptr->next!=NULL)
                         {
                             ptr=ptr->next;
-                            if (strcmp(save_srcpro[i].symname, ptr->name)==0)
+                            if (strcmp(temp, ptr->name)==0)
                             {
                                 op_2=atoi(save_srcpro[i].optr_2);
 
@@ -699,23 +704,32 @@ void equ()
                     }
                     else
                     {
+                        char EQU_temp[100];//空白清除用
+                        strcpy(EQU_temp,save_srcpro[i].optr_2);//空白清除用
+                        strtok(EQU_temp, " ");//空白清除用
                         hash=Hash(save_srcpro[i].optr_2);//因為放者其他符號所以查詢其他符號
                         ptr=&symname_arr[hash];
-                        if (strcmp(save_srcpro[i].optr_2, ptr->name)==0)
+
+                        if (strcmp(EQU_temp, ptr->name)==0)
                         {
-                            op_2=ptr->content;
+                            op_2=ptr->address;
+
 
                         }
                         while (ptr->next!=NULL)
                         {
+
                             ptr=ptr->next;
-                            if (strcmp(save_srcpro[i].optr_2, ptr->name)==0)
+
+                            if (strcmp(EQU_temp, ptr->name)==0)
                             {
-                                op_2=ptr->content;
+                                op_2=ptr->address;
+
                             }
                         }
 
-                        printf("%s\n",ptr->name);
+
+
                     }
 
                     if(save_srcpro[i].optr=='-')
@@ -725,7 +739,7 @@ void equ()
                         printf("%c\n",save_srcpro[i].optr);
                         ptr->content=op_1-op_2;
 
-                        printf("%d\n",ptr->content);
+                        printf("%x====%x\n",op_1,op_2);
                     }
 
 
