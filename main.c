@@ -584,223 +584,240 @@ void equ()
     int i;
     for (i=0; i<Srcpro_size; i++)
     {
-        save_srcpro[i].address_size=0;
-        if (strcmp(save_srcpro[i].optr_1, "*")==0)
+        char temp[100];//空白清除用
+        strcpy(temp, save_srcpro[i].opcode);//空白清除用
+        strtok(temp, " ");//空白清除用
+        if(strcmp(temp, "EQU")==0)
         {
-            int hash=Hash(save_srcpro[i].symname);
-            struct symname *ptr=&symname_arr[hash];
-            printf("%s %s %d\n",save_srcpro[i].symname,ptr->name,hash);
-            if (strcmp(save_srcpro[i].symname, ptr->name)==0)
+            if (strcmp(save_srcpro[i].optr_1, "*")==0)
             {
-                ptr->content=save_srcpro[i].address;
-            }
-            while (ptr->next!=NULL)
-            {
-                ptr=ptr->next;
-                if (strcmp(save_srcpro[i].symname, ptr->name)==0)
-                {
-                    ptr->content=save_srcpro[i].address;
-                    printf("%d------",ptr->content);
-                }
-            }
 
-        }
-        else
-        {
-            int hash;
-            int op_1,op_2;
-            if(atoi(save_srcpro[i].optr_1)!=0)
-            {
-                hash=Hash(save_srcpro[i].symname);//直接用當前符號查
+                int hash=Hash(save_srcpro[i].symname);
                 struct symname *ptr=&symname_arr[hash];
+                printf("%s %s %d\n",save_srcpro[i].symname,ptr->name,hash);
                 if (strcmp(save_srcpro[i].symname, ptr->name)==0)
                 {
 
-                    op_1=atoi(save_srcpro[i].optr_1);
-                    if (save_srcpro[i].optr=="")
-                    {
-                        ptr->content=op_1;
-                    }
+                    ptr->content=save_srcpro[i].address;
                 }
                 while (ptr->next!=NULL)
                 {
                     ptr=ptr->next;
                     if (strcmp(save_srcpro[i].symname, ptr->name)==0)
                     {
+
+                        ptr->content=save_srcpro[i].address;
+                    }
+                }
+
+            }
+            else
+            {
+
+                int hash;
+                int op_1,op_2;
+                if(atoi(save_srcpro[i].optr_1)!=0)
+                {
+
+                    hash=Hash(save_srcpro[i].symname);//直接用當前符號查
+                    struct symname *ptr=&symname_arr[hash];
+                    if (strcmp(save_srcpro[i].symname, ptr->name)==0)
+                    {
+
+
                         op_1=atoi(save_srcpro[i].optr_1);
                         if (save_srcpro[i].optr=="")
                         {
                             ptr->content=op_1;
                         }
                     }
-                }
-            }
-            else
-            {
-                hash=Hash(save_srcpro[i].optr_1);//因為放者其他符號所以查詢其他符號
-                struct symname *ptr=&symname_arr[hash];
-                if (strcmp(save_srcpro[i].optr_1, ptr->name)==0)
-                {
-                    op_1=ptr->content;
-                    if (save_srcpro[i].optr=="")
-                    {
-                        ptr->content=op_1;
-                    }
-                }
-                while (ptr->next!=NULL)
-                {
-                    ptr=ptr->next;
-                    if (strcmp(save_srcpro[i].optr_1, ptr->name)==0)
-                    {
-                        op_1=ptr->content;
-                        if (save_srcpro[i].optr=="")
-                        {
-                            ptr->content=op_1;
-                        }
-                    }
-                }
-            }
-
-            ////////////////////////////^^^^^^^^^^^不確定大蓋好
-            if (save_srcpro[i].optr!= "")//判斷有沒有後面
-            {
-                struct symname *ptr;
-
-                if(atoi(save_srcpro[i].optr_2)!=0)
-                {
-                    hash=Hash(save_srcpro[i].symname);//直接用當前符號查
-                    ptr=&symname_arr[hash];
-                    if (strcmp(save_srcpro[i].symname, ptr->name)==0)
-                    {
-
-                        op_2=atoi(save_srcpro[i].optr_2);
-                    }
                     while (ptr->next!=NULL)
                     {
                         ptr=ptr->next;
                         if (strcmp(save_srcpro[i].symname, ptr->name)==0)
                         {
-                            op_2=atoi(save_srcpro[i].optr_2);
-
+                            op_1=atoi(save_srcpro[i].optr_1);
+                            if (save_srcpro[i].optr=="")
+                            {
+                                ptr->content=op_1;
+                            }
                         }
                     }
                 }
                 else
                 {
-                    hash=Hash(save_srcpro[i].optr_2);//因為放者其他符號所以查詢其他符號
-                    ptr=&symname_arr[hash];
-                    if (strcmp(save_srcpro[i].optr_2, ptr->name)==0)
+                    hash=Hash(save_srcpro[i].optr_1);//因為放者其他符號所以查詢其他符號
+                    struct symname *ptr=&symname_arr[hash];
+                    if (strcmp(save_srcpro[i].optr_1, ptr->name)==0)
                     {
-                        op_2=ptr->content;
-
+                        op_1=ptr->address;
+                        if (save_srcpro[i].optr=="")
+                        {
+                            ptr->content=op_1;
+                        }
                     }
                     while (ptr->next!=NULL)
                     {
                         ptr=ptr->next;
+                        if (strcmp(save_srcpro[i].optr_1, ptr->name)==0)
+                        {
+                            op_1=ptr->address;
+                            if (save_srcpro[i].optr=="")
+                            {
+                                ptr->content=op_1;
+                            }
+                        }
+                    }
+                }
+
+                ////////////////////////////^^^^^^^^^^^不確定大蓋好
+                if (save_srcpro[i].optr!= "")//判斷有沒有後面
+                {
+
+
+                    struct symname *ptr;
+
+                    if(atoi(save_srcpro[i].optr_2)!=0)
+                    {
+                        hash=Hash(save_srcpro[i].symname);//直接用當前符號查
+                        ptr=&symname_arr[hash];
+                        if (strcmp(save_srcpro[i].symname, ptr->name)==0)
+                        {
+
+                            op_2=atoi(save_srcpro[i].optr_2);
+                        }
+                        while (ptr->next!=NULL)
+                        {
+                            ptr=ptr->next;
+                            if (strcmp(save_srcpro[i].symname, ptr->name)==0)
+                            {
+                                op_2=atoi(save_srcpro[i].optr_2);
+
+                            }
+                        }
+
+                    }
+                    else
+                    {
+                        hash=Hash(save_srcpro[i].optr_2);//因為放者其他符號所以查詢其他符號
+                        ptr=&symname_arr[hash];
                         if (strcmp(save_srcpro[i].optr_2, ptr->name)==0)
                         {
                             op_2=ptr->content;
+
                         }
+                        while (ptr->next!=NULL)
+                        {
+                            ptr=ptr->next;
+                            if (strcmp(save_srcpro[i].optr_2, ptr->name)==0)
+                            {
+                                op_2=ptr->content;
+                            }
+                        }
+
+                        printf("%s\n",ptr->name);
+                    }
+
+                    if(save_srcpro[i].optr=='-')
+                    {
+
+
+                        printf("%c\n",save_srcpro[i].optr);
+                        ptr->content=op_1-op_2;
+
+                        printf("%d\n",ptr->content);
                     }
 
 
                 }
 
 
-                if(save_srcpro[i].optr!="-")
-                {
-                    //ptr->content=op_1-op_2;
-                }
-
 
             }
-
-
-
         }
     }
 }
-    void init_block()
+void init_block()
+{
+    int i;
+    for (i=0; i<MAX_block_locctr_SIZE; i++)
     {
-        int i;
-        for (i=0; i<MAX_block_locctr_SIZE; i++)
+        strcpy(block_locctr_arrary[i].block_name, "NULL");
+    }
+}
+void init_LTORG_Arr()
+{
+    int i;
+    for (i=0; i<HASH_SIZE; i++)
+    {
+        strcpy(LTORG_Arr[i].name, "NULL");
+        LTORG_Arr[i].next==NULL;
+        LTORG_Arr[i].isltorg=0;
+    }
+}
+void init_symname ()
+{
+    int i;
+    for(i=0; i<HASH_SIZE; i++)
+    {
+        strcpy(symname_arr[i].name, "NULL");
+        symname_arr[i].next==NULL;
+        symname_arr[i].use=0;
+    }
+}
+void priint_symname()
+{
+    int i;
+
+    printf("name  use address Hash\n");
+    for(i=0; i<HASH_SIZE; i++)
+    {
+        struct symname *ptr = &symname_arr[i];
+        if(strcmp(ptr->name,"NULL"))
         {
-            strcpy(block_locctr_arrary[i].block_name, "NULL");
+            printf("%s %d  %04x %d %x\n",ptr->name,ptr->use,ptr->address,i,ptr->content);
+        }
+        while(ptr->next!=NULL)
+        {
+            ptr=ptr->next;
+            printf("%s %d  %04x %d %x\n",ptr->name,ptr->use,ptr->address,i,ptr->content);
         }
     }
-    void init_LTORG_Arr()
-    {
-        int i;
-        for (i=0; i<HASH_SIZE; i++)
-        {
-            strcpy(LTORG_Arr[i].name, "NULL");
-            LTORG_Arr[i].next==NULL;
-            LTORG_Arr[i].isltorg=0;
-        }
-    }
-    void init_symname ()
-    {
-        int i;
-        for(i=0; i<HASH_SIZE; i++)
-        {
-            strcpy(symname_arr[i].name, "NULL");
-            symname_arr[i].next==NULL;
-            symname_arr[i].use=0;
-        }
-    }
-    void priint_symname()
-    {
-        int i;
 
-        printf("name  use address Hash\n");
-        for(i=0; i<HASH_SIZE; i++)
-        {
-            struct symname *ptr = &symname_arr[i];
-            if(strcmp(ptr->name,"NULL"))
-            {
-                printf("%s %d  %04x %d %x\n",ptr->name,ptr->use,ptr->address,i,ptr->content);
-            }
-            while(ptr->next!=NULL)
-            {
-                ptr=ptr->next;
-                printf("%s %d  %04x %d %x\n",ptr->name,ptr->use,ptr->address,i,ptr->content);
-            }
-        }
+}
+int main()
+{
+    char reg1[100], reg2[100], reg3[100];
+    FILE *fp_w = fopen("data_out.txt", "w");
+    init_symname ();
+    init_op_cod_arr();
+    red_op_code();
+    init_LTORG_Arr();
+    //        test_print_op_code();//測試print_opOCD
+    init_red_srcpro();
+    red_srcpro();
+    //        printf("%d  %d",Hash("RSUB  "),Hash("RSUB"));//赫緒測試
 
-    }
-    int main()
-    {
-        char reg1[100], reg2[100], reg3[100];
-        FILE *fp_w = fopen("data_out.txt", "w");
-        init_symname ();
-        init_op_cod_arr();
-        red_op_code();
-        init_LTORG_Arr();
-        //        test_print_op_code();//測試print_opOCD
-        init_red_srcpro();
-        red_srcpro();
-        //        printf("%d  %d",Hash("RSUB  "),Hash("RSUB"));//赫緒測試
+    get_address_size();
 
-        get_address_size();
+    test_print_srcpro();
 
-        test_print_srcpro();
+    equ();
 
-        equ();
-
-        priint_symname();
+    priint_symname();
 
 
-        //測試區
-        //    char *substr,temp[100];
-        //    strcpy(temp, save_srcpro[1].opcode);
-        //    substr = strtok(temp, " ");
-        //    printf("%s\n%s\n%s\n %d",temp,save_srcpro[1].opcode,op_code[Hash(save_srcpro[1].opcode)].op_name,strcmp(temp, op_code[Hash(save_srcpro[1].opcode)].op_name));
-        //測試區
+    //測試區
+    //    char *substr,temp[100];
+    //    strcpy(temp, save_srcpro[1].opcode);
+    //    substr = strtok(temp, " ");
+    //    printf("%s\n%s\n%s\n %d",temp,save_srcpro[1].opcode,op_code[Hash(save_srcpro[1].opcode)].op_name,strcmp(temp, op_code[Hash(save_srcpro[1].opcode)].op_name));
+    //測試區
 
-        if (fp_w == NULL)
-            return -1;
+    if (fp_w == NULL)
+        return -1;
 
-        fclose(fp_w);
+    fclose(fp_w);
 
 
-    }
+}
