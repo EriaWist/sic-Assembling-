@@ -821,6 +821,127 @@ void priint_symname()
     }
 
 }
+void obj_code()
+{
+    int i;
+    for (i=0; i<Srcpro_size; i++)
+    {
+            int hash =Hash(save_srcpro[i].optr_1);
+            struct LTORG *ptr=&LTORG_Arr[hash];
+            if (strcmp(ptr->name, "NULL")==0)
+            {
+                strcpy(ptr->name, save_srcpro[i].optr_1);
+                //                printf("%s\n",ptr->name);
+            }
+            else
+            {
+                while (ptr->next!=NULL)
+                {
+                    ptr=ptr->next;
+                    if (strcmp(ptr->name, save_srcpro[i].optr_1)==0)  //赫序重複add_sw打開
+                    {
+
+                    }
+                }
+
+            }
+
+
+
+        }
+        char temp[100];//空白清除用
+        strcpy(temp, save_srcpro[i].opcode);//空白清除用
+        strtok(temp, " ");//空白清除用
+        if (strcmp(temp, "START")==0)
+        {
+
+        }
+        else if (save_srcpro[i].exformat==true)
+        {
+
+        }
+        else if (strcmp(temp, "WORD")==0)
+        {
+            save_srcpro[i].address_size=3;
+        }
+        else if (strcmp(temp, "RESW")==0)
+        {
+            save_srcpro[i].address_size=atoi(save_srcpro[i].optr_1)*3;
+            //                printf("%d ",save_srcpro[i].address_size);
+        }
+        else if (strcmp(temp, "RESB")==0)
+        {
+            save_srcpro[i].address_size=atoi(save_srcpro[i].optr_1);
+            //                                printf("%d ",save_srcpro[i].address_size);
+        }
+        else if (strcmp(temp, "BYTE")==0)
+        {
+            strcpy(temp, save_srcpro[i].optr_1);
+            strtok(temp, " ");
+            save_srcpro[i].address_size=strlen(temp)-3;
+            if (save_srcpro[i].optr_1[0]=='X')
+            {
+                save_srcpro[i].address_size/=2;
+            }
+            //                printf("%d %s",save_srcpro[i].address_size,temp);//當位置有問題可以看看
+        }
+        else if (strcmp(temp, "BASE")==0)
+        {
+            save_srcpro[i].address_size=0;
+        }
+        else if (strcmp(temp, "LTORG")==0)
+        {
+                        Srcpro_size++;
+            int j;
+
+
+            save_srcpro[i].address_size=0;
+        }
+        else if (strcmp(temp, "EQU")==0)
+        {
+
+        }
+        else if (strcmp(temp, "END")==0)
+        {
+            int j;
+
+
+
+        }
+        else if (strcmp(temp, "USE")==0)
+        {
+            int j=0,bool_block=0;
+            while (strcmp(block_locctr_arrary[j++].block_name, "NULL"))
+            {
+                if (strcmp(save_srcpro[i].optr_1, block_locctr_arrary[j].block_name))
+                {
+
+                }
+            }
+            if (bool_block==1)
+            {
+
+            }
+        }
+        else
+        {
+            int form=check_op_code(temp);
+            if(form!=-1)
+            {
+                save_srcpro[i].address_size=form;
+            }
+            else
+            {
+                save_srcpro[i].address_size=0;
+                //                    printf("- %s -\n",temp);
+            }
+        }
+
+
+
+
+    }
+
 int main()
 {
     char reg1[100], reg2[100], reg3[100];
