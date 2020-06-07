@@ -594,7 +594,6 @@ void equ()
 
                 int hash=Hash(save_srcpro[i].symname);
                 struct symname *ptr=&symname_arr[hash];
-                printf("%s %s %d\n",save_srcpro[i].symname,ptr->name,hash);
                 if (strcmp(save_srcpro[i].symname, ptr->name)==0)
                 {
 
@@ -648,8 +647,8 @@ void equ()
                 else
                 {
                     char EQU_op1_temp[100];//空白清除用
-                        strcpy(EQU_op1_temp,save_srcpro[i].optr_1);//空白清除用
-                        strtok(EQU_op1_temp, " ");//空白清除用
+                    strcpy(EQU_op1_temp,save_srcpro[i].optr_1);//空白清除用
+                    strtok(EQU_op1_temp, " ");//空白清除用
 
                     hash=Hash(save_srcpro[i].optr_1);//因為放者其他符號所以查詢其他符號
                     struct symname *ptr=&symname_arr[hash];
@@ -732,14 +731,37 @@ void equ()
 
                     }
 
+                    char Now_EQU_temp[100];//空白清除用
+                    strcpy(Now_EQU_temp,save_srcpro[i].optr_2);//空白清除用
+                    strtok(Now_EQU_temp, " ");//空白清除用
+                    int hash=Hash(save_srcpro[i].symname);
+                    struct symname *now_ptr=&symname_arr[hash];
+                    if (strcmp(Now_EQU_temp, now_ptr->name)==0)
+                    {
+
+                    }
+                    else
+                    {
+
+                        while (now_ptr->next!=NULL)
+                        {
+                            now_ptr=now_ptr->next;
+                            if (strcmp(Now_EQU_temp, now_ptr->name)==0)
+                            {
+                                break;
+                            }
+                        }
+                    }
+
+
                     if(save_srcpro[i].optr=='-')
                     {
 
 
-                        printf("%c\n",save_srcpro[i].optr);
-                        ptr->content=op_1-op_2;
+                        now_ptr->content=op_1-op_2;
+                        now_ptr->address=op_1-op_2;
+                        save_srcpro[i].address=op_1-op_2;
 
-                        printf("%x====%x\n",op_1,op_2);
                     }
 
 
@@ -789,12 +811,12 @@ void priint_symname()
         struct symname *ptr = &symname_arr[i];
         if(strcmp(ptr->name,"NULL"))
         {
-            printf("%s %d  %04x %d %x\n",ptr->name,ptr->use,ptr->address,i,ptr->content);
+            printf("%s %d  %04x %d \n",ptr->name,ptr->use,ptr->address,i);
         }
         while(ptr->next!=NULL)
         {
             ptr=ptr->next;
-            printf("%s %d  %04x %d %x\n",ptr->name,ptr->use,ptr->address,i,ptr->content);
+            printf("%s %d  %04x %d \n",ptr->name,ptr->use,ptr->address,i);
         }
     }
 
@@ -814,12 +836,13 @@ int main()
 
     get_address_size();
 
-    test_print_srcpro();
+
 
     equ();
 
-    priint_symname();
+    test_print_srcpro();
 
+    priint_symname();
 
     //測試區
     //    char *substr,temp[100];
