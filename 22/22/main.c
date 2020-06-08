@@ -91,6 +91,7 @@ struct op_code *create_note()
     struct op_code * ptr;
     ptr = (struct op_code *)malloc(sizeof(struct op_code));
     ptr->next =NULL;
+    ptr->op_cod_int=0;
     return ptr;
 }
 void red_op_code()//讀op_code-star
@@ -134,7 +135,7 @@ void red_op_code()//讀op_code-star
         if (ptr->op_cod[0]-'0'>=0&&ptr->op_cod[0]-'0'<=9) {
             char temp = ptr->op_cod[0];
             ptr->op_cod_int+=atoi(&temp)*16;
-            printf("%s %x===\n",ptr->op_cod,ptr->op_cod_int);
+            printf("%s %02x===\n",ptr->op_cod,ptr->op_cod_int);
         }
         else
         {
