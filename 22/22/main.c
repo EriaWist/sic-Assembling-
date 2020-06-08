@@ -39,9 +39,10 @@ struct symname
 struct op_code //存op_code_空間-star
 {
     char op_name[10];//op 名稱
-    char op_m[5];//記憶體
+    char op_m[10];//記憶體
     char op_format[5];//格式
     char op_cod[3];//實際的op碼
+    int op_cod_int;
     struct op_code *next;//假如赫旭超過 預設為NULL
 } op_code[HASH_SIZE]; //存op_code_空間-end 大小為HASH_SIZE
 struct srcpro
@@ -56,6 +57,7 @@ struct srcpro
     int address;
     int address_size;
     int use;
+    long long int obj_code;
     struct srcpro *next;
 } save_srcpro[MAX_Srcpro_SIZE];
 
@@ -70,7 +72,7 @@ unsigned int Hash(char* str)//赫序加起來-star
             hash*=10;
             hash += str[i];
         }
-
+        
     }
     return hash%HASH_SIZE;
 }//赫序加起來-end
@@ -81,6 +83,7 @@ void init_op_cod_arr()//初始化全域的op_code陣列-star
     {
         op_code[i].next=NULL;
         strcpy(op_code[i].op_name, "NULL");
+        op_code[i].op_cod_int=0;
     }
 }//初始化全域的op_code陣列-end
 struct op_code *create_note()
@@ -128,10 +131,20 @@ void red_op_code()//讀op_code-star
         strcpy(ptr->op_format, substr);
         substr = strtok(NULL, ",");//切割op_code
         strcpy(ptr->op_cod, substr);
-
+        if (ptr->op_cod[0]-'0'>=0&&ptr->op_cod[0]-'0'<=9) {
+            char temp = ptr->op_cod[0];
+            ptr->op_cod_int+=atoi(&temp)*16;
+            printf("%s %x===\n",ptr->op_cod,ptr->op_cod_int);
+        }
+        else
+        {
+            
+        }
+        
+        
     }
     fclose(fp_r);
-
+    
 }//讀op_code-end
 void test_print_op_code()//測試用看op_code對不對-start
 {
@@ -155,7 +168,7 @@ void test_print_op_code()//測試用看op_code對不對-start
                 }
             }
             while (&free);
-
+            
         }
     }
 }//測試用看op_code對不對-end
@@ -167,7 +180,7 @@ void red_srcpro()//讀題目-start
     while(!feof(fp_r)) //讀取資料.開始
     {
         fgets(&reg1,100, fp_r);
-
+        
         if(reg1[strlen(reg1) - 1] == '\n')
             reg1[strlen(reg1) - 1] = '\0';
         if (reg1[strlen(reg1) - 1] == '\r')
@@ -190,13 +203,13 @@ void red_srcpro()//讀題目-start
         }
         substr = strtok(reg1, ";");//切割符號
         //處理分割.結束
-
+        
         if (substr!=NULL)  //第一段
         {
             strcpy(save_srcpro[i].symname, substr);
             substr = strtok(NULL, ";");//切割符號
         }//第一段
-
+        
         if (substr!=NULL)  //第二段
         {
             if (substr[0]=='+')
@@ -209,7 +222,7 @@ void red_srcpro()//讀題目-start
         if (substr!=NULL)  //第三段
         {
             save_srcpro[i].optag=substr[0];
-
+            
             strcpy(save_srcpro[i].optr_1, &substr[1]);
             substr = strtok(NULL, ";");//切割符號
         }//第三段
@@ -282,7 +295,7 @@ void test_print_srcpro()//測試輸出用-star
         }
         printf("\n");
         int j;
-
+        
         if (strcmp(save_srcpro[i].opcode,"LTORG ")==0)
         {
             for(j=0; j<HASH_SIZE; j++)
@@ -322,7 +335,7 @@ void test_print_srcpro()//測試輸出用-star
                         printf("   %04x      * %s",ptr_lto->address,ptr_lto->name);
                         printf("\n");
                     }
-
+                    
                 }
             }
         }
@@ -364,7 +377,7 @@ int check_op_code(char *in_ptr)
 void get_address_size ()//算每一條指令站多少byte-開始
 {
     int i,use=0,sw=0,add_sw=0;
-
+    
     for (i=0; i<Srcpro_size; i++)
     {
         sw=0;//這個是用在LTORG當到LTORG打開開關讓後續不多於處理地址
@@ -397,9 +410,9 @@ void get_address_size ()//算每一條指令站多少byte-開始
                     //                    printf("%s\n",ptr->name);
                 }
             }
-
-
-
+            
+            
+            
         }
         char temp[100];//空白清除用
         strcpy(temp, save_srcpro[i].opcode);//空白清除用
@@ -472,7 +485,7 @@ void get_address_size ()//算每一條指令站多少byte-開始
         }
         else if (strcmp(temp, "EQU")==0)
         {
-
+            
         }
         else if (strcmp(temp, "END")==0)
         {
@@ -506,8 +519,8 @@ void get_address_size ()//算每一條指令站多少byte-開始
                     }
                 }
             }
-
-
+            
+            
         }
         else if (strcmp(temp, "USE")==0)
         {
@@ -546,7 +559,7 @@ void get_address_size ()//算每一條指令站多少byte-開始
             save_srcpro[i].address = block_locctr_arrary[use].address;
             block_locctr_arrary[use].address += save_srcpro[i].address_size;
         }
-
+        
         if (strcmp(save_srcpro[i].symname, "      ")!=0&&strcmp(save_srcpro[i].symname, "")!=0)
         {
             int stname_hash =Hash(save_srcpro[i].symname);
@@ -573,14 +586,14 @@ void get_address_size ()//算每一條指令站多少byte-開始
                 ptr->next=NULL;
             }
         }
-
+        
     }
-
+    
 }//算每一條指令站多少byte-結束
 
 void equ()
 {
-
+    
     int i;
     for (i=0; i<Srcpro_size; i++)
     {
@@ -591,12 +604,12 @@ void equ()
         {
             if (strcmp(save_srcpro[i].optr_1, "*")==0)
             {
-
+                
                 int hash=Hash(save_srcpro[i].symname);
                 struct symname *ptr=&symname_arr[hash];
                 if (strcmp(save_srcpro[i].symname, ptr->name)==0)
                 {
-
+                    
                     ptr->content=save_srcpro[i].address;
                 }
                 while (ptr->next!=NULL)
@@ -604,27 +617,27 @@ void equ()
                     ptr=ptr->next;
                     if (strcmp(save_srcpro[i].symname, ptr->name)==0)
                     {
-
+                        
                         ptr->content=save_srcpro[i].address;
                     }
                 }
-
+                
             }
             else
             {
-
+                
                 int hash;
                 int op_1,op_2;
                 if(atoi(save_srcpro[i].optr_1)!=0)
                 {
-
+                    
                     hash=Hash(save_srcpro[i].symname);//直接用當前符號查
                     struct symname *ptr=&symname_arr[hash];
-
+                    
                     if (strcmp(temp, ptr->name)==0)
                     {
-
-
+                        
+                        
                         op_1=atoi(save_srcpro[i].optr_1);
                         if (save_srcpro[i].optr=="")
                         {
@@ -649,7 +662,7 @@ void equ()
                     char EQU_op1_temp[100];//空白清除用
                     strcpy(EQU_op1_temp,save_srcpro[i].optr_1);//空白清除用
                     strtok(EQU_op1_temp, " ");//空白清除用
-
+                    
                     hash=Hash(save_srcpro[i].optr_1);//因為放者其他符號所以查詢其他符號
                     struct symname *ptr=&symname_arr[hash];
                     if (strcmp(EQU_op1_temp, ptr->name)==0)
@@ -673,21 +686,21 @@ void equ()
                         }
                     }
                 }
-
+                
                 ////////////////////////////^^^^^^^^^^^不確定大蓋好
                 if (save_srcpro[i].optr!= "")//判斷有沒有後面
                 {
-
-
+                    
+                    
                     struct symname *ptr;
-
+                    
                     if(atoi(save_srcpro[i].optr_2)!=0)
                     {
                         hash=Hash(save_srcpro[i].symname);//直接用當前符號查
                         ptr=&symname_arr[hash];
                         if (strcmp(temp, ptr->name)==0)
                         {
-
+                            
                             op_2=atoi(save_srcpro[i].optr_2);
                         }
                         while (ptr->next!=NULL)
@@ -696,10 +709,10 @@ void equ()
                             if (strcmp(temp, ptr->name)==0)
                             {
                                 op_2=atoi(save_srcpro[i].optr_2);
-
+                                
                             }
                         }
-
+                        
                     }
                     else
                     {
@@ -708,29 +721,29 @@ void equ()
                         strtok(EQU_temp, " ");//空白清除用
                         hash=Hash(save_srcpro[i].optr_2);//因為放者其他符號所以查詢其他符號
                         ptr=&symname_arr[hash];
-
+                        
                         if (strcmp(EQU_temp, ptr->name)==0)
                         {
                             op_2=ptr->address;
-
-
+                            
+                            
                         }
                         while (ptr->next!=NULL)
                         {
-
+                            
                             ptr=ptr->next;
-
+                            
                             if (strcmp(EQU_temp, ptr->name)==0)
                             {
                                 op_2=ptr->address;
-
+                                
                             }
                         }
-
-
-
+                        
+                        
+                        
                     }
-
+                    
                     char Now_EQU_temp[100];//空白清除用
                     strcpy(Now_EQU_temp,save_srcpro[i].optr_2);//空白清除用
                     strtok(Now_EQU_temp, " ");//空白清除用
@@ -738,11 +751,11 @@ void equ()
                     struct symname *now_ptr=&symname_arr[hash];
                     if (strcmp(Now_EQU_temp, now_ptr->name)==0)
                     {
-
+                        
                     }
                     else
                     {
-
+                        
                         while (now_ptr->next!=NULL)
                         {
                             now_ptr=now_ptr->next;
@@ -752,23 +765,23 @@ void equ()
                             }
                         }
                     }
-
-
+                    
+                    
                     if(save_srcpro[i].optr=='-')
                     {
-
-
+                        
+                        
                         now_ptr->content=op_1-op_2;
                         now_ptr->address=op_1-op_2;
                         save_srcpro[i].address=op_1-op_2;
-
+                        
                     }
-
-
+                    
+                    
                 }
-
-
-
+                
+                
+                
             }
         }
     }
@@ -804,7 +817,7 @@ void init_symname ()
 void priint_symname()
 {
     int i;
-
+    
     printf("name  use address Hash\n");
     for(i=0; i<HASH_SIZE; i++)
     {
@@ -819,128 +832,128 @@ void priint_symname()
             printf("%s %d  %04x %d \n",ptr->name,ptr->use,ptr->address,i);
         }
     }
-
+    
 }
 void obj_code()
 {
     int i;
     for (i=0; i<Srcpro_size; i++)
     {
-            int hash =Hash(save_srcpro[i].optr_1);
-            struct LTORG *ptr=&LTORG_Arr[hash];
-            if (strcmp(ptr->name, "NULL")==0)
-            {
-                strcpy(ptr->name, save_srcpro[i].optr_1);
-                //                printf("%s\n",ptr->name);
-            }
-            else
-            {
-                while (ptr->next!=NULL)
-                {
-                    ptr=ptr->next;
-                    if (strcmp(ptr->name, save_srcpro[i].optr_1)==0)  //赫序重複add_sw打開
-                    {
-
-                    }
-                }
-
-            }
-
-
-
-        }
-        char temp[100];//空白清除用
-        strcpy(temp, save_srcpro[i].opcode);//空白清除用
-        strtok(temp, " ");//空白清除用
-        if (strcmp(temp, "START")==0)
+        int hash =Hash(save_srcpro[i].optr_1);
+        struct LTORG *ptr=&LTORG_Arr[hash];
+        if (strcmp(ptr->name, "NULL")==0)
         {
-
-        }
-        else if (save_srcpro[i].exformat==true)
-        {
-
-        }
-        else if (strcmp(temp, "WORD")==0)
-        {
-            save_srcpro[i].address_size=3;
-        }
-        else if (strcmp(temp, "RESW")==0)
-        {
-            save_srcpro[i].address_size=atoi(save_srcpro[i].optr_1)*3;
-            //                printf("%d ",save_srcpro[i].address_size);
-        }
-        else if (strcmp(temp, "RESB")==0)
-        {
-            save_srcpro[i].address_size=atoi(save_srcpro[i].optr_1);
-            //                                printf("%d ",save_srcpro[i].address_size);
-        }
-        else if (strcmp(temp, "BYTE")==0)
-        {
-            strcpy(temp, save_srcpro[i].optr_1);
-            strtok(temp, " ");
-            save_srcpro[i].address_size=strlen(temp)-3;
-            if (save_srcpro[i].optr_1[0]=='X')
-            {
-                save_srcpro[i].address_size/=2;
-            }
-            //                printf("%d %s",save_srcpro[i].address_size,temp);//當位置有問題可以看看
-        }
-        else if (strcmp(temp, "BASE")==0)
-        {
-            save_srcpro[i].address_size=0;
-        }
-        else if (strcmp(temp, "LTORG")==0)
-        {
-                        Srcpro_size++;
-            int j;
-
-
-            save_srcpro[i].address_size=0;
-        }
-        else if (strcmp(temp, "EQU")==0)
-        {
-
-        }
-        else if (strcmp(temp, "END")==0)
-        {
-            int j;
-
-
-
-        }
-        else if (strcmp(temp, "USE")==0)
-        {
-            int j=0,bool_block=0;
-            while (strcmp(block_locctr_arrary[j++].block_name, "NULL"))
-            {
-                if (strcmp(save_srcpro[i].optr_1, block_locctr_arrary[j].block_name))
-                {
-
-                }
-            }
-            if (bool_block==1)
-            {
-
-            }
+            strcpy(ptr->name, save_srcpro[i].optr_1);
+            //                printf("%s\n",ptr->name);
         }
         else
         {
-            int form=check_op_code(temp);
-            if(form!=-1)
+            while (ptr->next!=NULL)
             {
-                save_srcpro[i].address_size=form;
+                ptr=ptr->next;
+                if (strcmp(ptr->name, save_srcpro[i].optr_1)==0)  //赫序重複add_sw打開
+                {
+                    
+                }
             }
-            else
+            
+        }
+        
+        
+        
+    }
+    char temp[100];//空白清除用
+    strcpy(temp, save_srcpro[i].opcode);//空白清除用
+    strtok(temp, " ");//空白清除用
+    if (strcmp(temp, "START")==0)
+    {
+        
+    }
+    else if (save_srcpro[i].exformat==true)
+    {
+        
+    }
+    else if (strcmp(temp, "WORD")==0)
+    {
+        save_srcpro[i].address_size=3;
+    }
+    else if (strcmp(temp, "RESW")==0)
+    {
+        save_srcpro[i].address_size=atoi(save_srcpro[i].optr_1)*3;
+        //                printf("%d ",save_srcpro[i].address_size);
+    }
+    else if (strcmp(temp, "RESB")==0)
+    {
+        save_srcpro[i].address_size=atoi(save_srcpro[i].optr_1);
+        //                                printf("%d ",save_srcpro[i].address_size);
+    }
+    else if (strcmp(temp, "BYTE")==0)
+    {
+        strcpy(temp, save_srcpro[i].optr_1);
+        strtok(temp, " ");
+        save_srcpro[i].address_size=strlen(temp)-3;
+        if (save_srcpro[i].optr_1[0]=='X')
+        {
+            save_srcpro[i].address_size/=2;
+        }
+        //                printf("%d %s",save_srcpro[i].address_size,temp);//當位置有問題可以看看
+    }
+    else if (strcmp(temp, "BASE")==0)
+    {
+        save_srcpro[i].address_size=0;
+    }
+    else if (strcmp(temp, "LTORG")==0)
+    {
+        Srcpro_size++;
+        int j;
+        
+        
+        save_srcpro[i].address_size=0;
+    }
+    else if (strcmp(temp, "EQU")==0)
+    {
+        
+    }
+    else if (strcmp(temp, "END")==0)
+    {
+        int j;
+        
+        
+        
+    }
+    else if (strcmp(temp, "USE")==0)
+    {
+        int j=0,bool_block=0;
+        while (strcmp(block_locctr_arrary[j++].block_name, "NULL"))
+        {
+            if (strcmp(save_srcpro[i].optr_1, block_locctr_arrary[j].block_name))
             {
-                save_srcpro[i].address_size=0;
-                //                    printf("- %s -\n",temp);
+                
             }
         }
-
-
-
-
+        if (bool_block==1)
+        {
+            
+        }
     }
+    else
+    {
+        int form=check_op_code(temp);
+        if(form!=-1)
+        {
+            save_srcpro[i].address_size=form;
+        }
+        else
+        {
+            save_srcpro[i].address_size=0;
+            //                    printf("- %s -\n",temp);
+        }
+    }
+    
+    
+    
+    
+}
 
 int main()
 {
@@ -954,28 +967,28 @@ int main()
     init_red_srcpro();
     red_srcpro();
     //        printf("%d  %d",Hash("RSUB  "),Hash("RSUB"));//赫緒測試
-
+    
     get_address_size();
-
-
-
+    
+    
+    
     equ();
-
+    
     test_print_srcpro();
-
+    
     priint_symname();
-
+    
     //測試區
     //    char *substr,temp[100];
     //    strcpy(temp, save_srcpro[1].opcode);
     //    substr = strtok(temp, " ");
     //    printf("%s\n%s\n%s\n %d",temp,save_srcpro[1].opcode,op_code[Hash(save_srcpro[1].opcode)].op_name,strcmp(temp, op_code[Hash(save_srcpro[1].opcode)].op_name));
     //測試區
-
+    
     if (fp_w == NULL)
         return -1;
-
+    
     fclose(fp_w);
-
-
+    
+    
 }
