@@ -15,6 +15,7 @@
 #define MAX_Srcpro_SIZE 100 //指令行數的上限
 #define MAX_block_locctr_SIZE 100//use空間表
 int Srcpro_size=0;
+
 struct block_locctr//存use空間
 {
     char block_name[10];
@@ -135,10 +136,22 @@ void red_op_code()//讀op_code-star
         if (ptr->op_cod[0]-'0'>=0&&ptr->op_cod[0]-'0'<=9) {
             char temp = ptr->op_cod[0];
             ptr->op_cod_int+=atoi(&temp)*16;
-            printf("%s %02x===\n",ptr->op_cod,ptr->op_cod_int);
         }
         else
         {
+            char temp = ptr->op_cod[0];
+            ptr->op_cod_int+=(temp-'A'+10)*16;
+            
+        }
+        if (ptr->op_cod[1]-'0'>=0&&ptr->op_cod[1]-'0'<=9) {
+            char temp = ptr->op_cod[1];
+            ptr->op_cod_int+=atoi(&temp);
+            
+        }
+        else
+        {
+            char temp = ptr->op_cod[1];
+            ptr->op_cod_int+=(temp-'A'+10);
             
         }
         
@@ -840,29 +853,6 @@ void obj_code()
     int i;
     for (i=0; i<Srcpro_size; i++)
     {
-        int hash =Hash(save_srcpro[i].optr_1);
-        struct LTORG *ptr=&LTORG_Arr[hash];
-        if (strcmp(ptr->name, "NULL")==0)
-        {
-            strcpy(ptr->name, save_srcpro[i].optr_1);
-            //                printf("%s\n",ptr->name);
-        }
-        else
-        {
-            while (ptr->next!=NULL)
-            {
-                ptr=ptr->next;
-                if (strcmp(ptr->name, save_srcpro[i].optr_1)==0)  //赫序重複add_sw打開
-                {
-                    
-                }
-            }
-            
-        }
-        
-        
-        
-    }
     char temp[100];//空白清除用
     strcpy(temp, save_srcpro[i].opcode);//空白清除用
     strtok(temp, " ");//空白清除用
@@ -979,6 +969,7 @@ int main()
     
     priint_symname();
     
+    obj_code();
     //測試區
     //    char *substr,temp[100];
     //    strcpy(temp, save_srcpro[1].opcode);
