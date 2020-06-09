@@ -319,6 +319,7 @@ void test_print_srcpro()//測試輸出用-star
                 struct LTORG *ptr_lto=&LTORG_Arr[j];
                 if(strcmp(LTORG_Arr[j].name,"NULL")!=0&&LTORG_Arr[j].isltorg==1)
                 {
+                    printf(" %8s ",save_srcpro[i].obj_code_str);
                     printf("   %04x      * %s",LTORG_Arr[j].address,LTORG_Arr[j].name);
                     printf("\n");
                 }
@@ -327,6 +328,7 @@ void test_print_srcpro()//測試輸出用-star
                     ptr_lto=ptr_lto->next;
                     if(strcmp(ptr_lto->name,"NULL")!=0&&ptr_lto->isltorg==1)
                     {
+                        printf(" %8s ",save_srcpro[i].obj_code_str);
                         printf("   %04x      * %s",ptr_lto->address,ptr_lto->name);
                         printf("\n");
                     }
@@ -340,6 +342,7 @@ void test_print_srcpro()//測試輸出用-star
                 struct LTORG *ptr_lto=&LTORG_Arr[j];
                 if(strcmp(LTORG_Arr[j].name,"NULL")!=0&&LTORG_Arr[j].isltorg==0)
                 {
+                    printf(" %8s ",save_srcpro[i].obj_code_str);
                     printf("   %04x      * %s",LTORG_Arr[j].address,LTORG_Arr[j].name);
                     printf("\n");
                 }
@@ -348,6 +351,7 @@ void test_print_srcpro()//測試輸出用-star
                     ptr_lto=ptr_lto->next;
                     if(strcmp(ptr_lto->name,"NULL")!=0&&ptr_lto->isltorg==0)
                     {
+                        printf(" %8s ",save_srcpro[i].obj_code_str);
                         printf("   %04x      * %s",ptr_lto->address,ptr_lto->name);
                         printf("\n");
                     }
@@ -869,56 +873,51 @@ void obj_code()
         {
             
             
-                
-        
-                do {
-                    if (strcmp(temp, ptr->op_name)==0)
-                    {
-                        int t=((int)pow(16, 1))*ptr->op_cod_int,t2;
-                        if (save_srcpro[i].optag=='#') {
-                            t+=1*(int)pow(16, 1);
-                        }
-                        else if(save_srcpro[i].optag=='@')
-                        {
-                            t+=2*(int)pow(16, 1);
-                        }
-                        else
-                        {
-                            t+=3*(int)pow(16, 1);
-                        }
-                        t+=1;//沒意外都是1
-                        struct symname *sy_ptr=&symname_arr[Hash(save_srcpro[i].optr_1)];
-                        int a=Hash(save_srcpro[i].optr_1);
-                        do {
-                            char sy_temp[100];//空白清除用
-                            strcpy(sy_temp, sy_ptr->name);//空白清除用
-                            strtok(sy_temp, " ");//空白清除用
-                            char srcpro_temp[100];//空白清除用
-                            strcpy(srcpro_temp, save_srcpro[i].optr_1);//空白清除用
-                            strtok(srcpro_temp, " ");//空白清除用
-                            
-                           // printf("%s\n",sy_temp);
-                            if (strcmp(sy_temp,srcpro_temp)==0) {
-                                
-                                t2=sy_ptr->address;
-                                
-                                break;
-                            }
-                            if(sy_ptr->next==NULL)
-                                break;
-                            sy_ptr=sy_ptr->next;
-                        } while (1);
-                        
-                        sprintf(save_srcpro[i].obj_code_str,"%03X%05X", t,t2);
-                        
-                        printf("%s",save_srcpro[i].obj_code_str);
-                        break;
+            
+            
+            do {
+                if (strcmp(temp, ptr->op_name)==0)
+                {
+                    int t=((int)pow(16, 1))*ptr->op_cod_int,t2;
+                    if (save_srcpro[i].optag=='#') {
+                        t+=1*(int)pow(16, 1);
                     }
-                    if (ptr->next==NULL)
-                        break;
-                    ptr=ptr->next;
-                }while (1);
-
+                    else if(save_srcpro[i].optag=='@')
+                    {
+                        t+=2*(int)pow(16, 1);
+                    }
+                    else
+                    {
+                        t+=3*(int)pow(16, 1);
+                    }
+                    t+=1;//沒意外都是1
+                    struct symname *sy_ptr=&symname_arr[Hash(save_srcpro[i].optr_1)];
+                    int a=Hash(save_srcpro[i].optr_1);
+                    do {
+                        char sy_temp[100];//空白清除用
+                        strcpy(sy_temp, sy_ptr->name);//空白清除用
+                        strtok(sy_temp, " ");//空白清除用
+                        char srcpro_temp[100];//空白清除用
+                        strcpy(srcpro_temp, save_srcpro[i].optr_1);//空白清除用
+                        strtok(srcpro_temp, " ");//空白清除用
+                        
+                        // printf("%s\n",sy_temp);
+                        if (strcmp(sy_temp,srcpro_temp)==0) {
+                            t2=sy_ptr->address;
+                            break;
+                        }
+                        if(sy_ptr->next==NULL)
+                            break;
+                        sy_ptr=sy_ptr->next;
+                    } while (1);
+                    
+                    sprintf(save_srcpro[i].obj_code_str,"%03X%05X", t,t2);
+                    break;
+                }
+                if (ptr->next==NULL)
+                    break;
+                ptr=ptr->next;
+            }while (1);
         }
         else if (strcmp(temp, "WORD")==0)
         {
@@ -996,7 +995,7 @@ void obj_code()
                 //                    printf("- %s -\n",temp);
             }
         }
-   
+        
     }
 }
 
@@ -1012,29 +1011,12 @@ int main()
     init_red_srcpro();
     red_srcpro();
     //        printf("%d  %d",Hash("RSUB  "),Hash("RSUB"));//赫緒測試
-    
     get_address_size();
-    
-    
-    
     equ();
     obj_code();
     test_print_srcpro();
-    
     priint_symname();
-    
-    
-    //測試區
-    //    char *substr,temp[100];
-    //    strcpy(temp, save_srcpro[1].opcode);
-    //    substr = strtok(temp, " ");
-    //    printf("%s\n%s\n%s\n %d",temp,save_srcpro[1].opcode,op_code[Hash(save_srcpro[1].opcode)].op_name,strcmp(temp, op_code[Hash(save_srcpro[1].opcode)].op_name));
-    //測試區
-    
     if (fp_w == NULL)
         return -1;
-    
     fclose(fp_w);
-    
-    
 }
