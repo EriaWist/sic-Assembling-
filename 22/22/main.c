@@ -16,7 +16,7 @@
 #define MAX_Srcpro_SIZE 100 //指令行數的上限
 #define MAX_block_locctr_SIZE 100//use空間表
 int Srcpro_size=0;
-
+int BASE=0;
 struct block_locctr//存use空間
 {
     char block_name[10];
@@ -59,7 +59,7 @@ struct srcpro
     int address;
     int address_size;
     int use;
-    long long int obj_code;
+    char obj_code_str[20];
     struct srcpro *next;
 } save_srcpro[MAX_Srcpro_SIZE];
 
@@ -265,6 +265,7 @@ void test_print_srcpro()//測試輸出用-star
     for (i=0; i<Srcpro_size; i++)
     {
         printf("%2d ",i);
+        printf(" %8s ",save_srcpro[i].obj_code_str);
         char *temp;
         printf("%04x ",save_srcpro[i].address);
         temp = save_srcpro[i].symname;
@@ -354,6 +355,7 @@ void test_print_srcpro()//測試輸出用-star
                 }
             }
         }
+        
     }
 }//測試輸出用-end
 int check_op_code(char *in_ptr)
@@ -866,24 +868,57 @@ void obj_code()
         else if (save_srcpro[i].exformat==true)
         {
             
-            if (strcmp(temp, ptr->op_name)==0) {
-                int t=((int)pow(16, 1))*ptr->op_cod_int;
-                if (<#condition#>) {
-                    <#statements#>
-                }
-                printf("%x\n", t);
+            
                 
-            }
-            else
-            {
-                while (ptr->next!=NULL) {
-                    if (strcmp(temp, ptr->op_name)==0) {
+        
+                do {
+                    if (strcmp(temp, ptr->op_name)==0)
+                    {
+                        int t=((int)pow(16, 1))*ptr->op_cod_int,t2;
+                        if (save_srcpro[i].optag=='#') {
+                            t+=1*(int)pow(16, 1);
+                        }
+                        else if(save_srcpro[i].optag=='@')
+                        {
+                            t+=2*(int)pow(16, 1);
+                        }
+                        else
+                        {
+                            t+=3*(int)pow(16, 1);
+                        }
+                        t+=1;//沒意外都是1
+                        struct symname *sy_ptr=&symname_arr[Hash(save_srcpro[i].optr_1)];
+                        int a=Hash(save_srcpro[i].optr_1);
+                        do {
+                            char sy_temp[100];//空白清除用
+                            strcpy(sy_temp, sy_ptr->name);//空白清除用
+                            strtok(sy_temp, " ");//空白清除用
+                            char srcpro_temp[100];//空白清除用
+                            strcpy(srcpro_temp, save_srcpro[i].optr_1);//空白清除用
+                            strtok(srcpro_temp, " ");//空白清除用
+                            
+                           // printf("%s\n",sy_temp);
+                            if (strcmp(sy_temp,srcpro_temp)==0) {
+                                
+                                t2=sy_ptr->address;
+                                
+                                break;
+                            }
+                            if(sy_ptr->next==NULL)
+                                break;
+                            sy_ptr=sy_ptr->next;
+                        } while (1);
                         
+                        sprintf(save_srcpro[i].obj_code_str,"%03X%05X", t,t2);
+                        
+                        printf("%s",save_srcpro[i].obj_code_str);
                         break;
                     }
+                    if (ptr->next==NULL)
+                        break;
                     ptr=ptr->next;
-                }
-            }
+                }while (1);
+
         }
         else if (strcmp(temp, "WORD")==0)
         {
@@ -983,12 +1018,12 @@ int main()
     
     
     equ();
-    
+    obj_code();
     test_print_srcpro();
     
     priint_symname();
     
-    obj_code();
+    
     //測試區
     //    char *substr,temp[100];
     //    strcpy(temp, save_srcpro[1].opcode);
