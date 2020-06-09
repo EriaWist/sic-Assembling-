@@ -7,6 +7,7 @@
 //  Created by 阿騰 on 2020/5/22.
 //  Copyright © 2020 阿騰. All rights reserved.
 //
+#include <math.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -853,97 +854,115 @@ void obj_code()
     int i;
     for (i=0; i<Srcpro_size; i++)
     {
-    char temp[100];//空白清除用
-    strcpy(temp, save_srcpro[i].opcode);//空白清除用
-    strtok(temp, " ");//空白清除用
-    if (strcmp(temp, "START")==0)
-    {
-        
-    }
-    else if (save_srcpro[i].exformat==true)
-    {
-        
-    }
-    else if (strcmp(temp, "WORD")==0)
-    {
-        save_srcpro[i].address_size=3;
-    }
-    else if (strcmp(temp, "RESW")==0)
-    {
-        save_srcpro[i].address_size=atoi(save_srcpro[i].optr_1)*3;
-        //                printf("%d ",save_srcpro[i].address_size);
-    }
-    else if (strcmp(temp, "RESB")==0)
-    {
-        save_srcpro[i].address_size=atoi(save_srcpro[i].optr_1);
-        //                                printf("%d ",save_srcpro[i].address_size);
-    }
-    else if (strcmp(temp, "BYTE")==0)
-    {
-        strcpy(temp, save_srcpro[i].optr_1);
-        strtok(temp, " ");
-        save_srcpro[i].address_size=strlen(temp)-3;
-        if (save_srcpro[i].optr_1[0]=='X')
+        char temp[100];//空白清除用
+        strcpy(temp, save_srcpro[i].opcode);//空白清除用
+        strtok(temp, " ");//空白清除用
+        int hash = Hash(temp);
+        struct op_code *ptr=&op_code[hash];
+        if (strcmp(temp, "START")==0)
         {
-            save_srcpro[i].address_size/=2;
+            
         }
-        //                printf("%d %s",save_srcpro[i].address_size,temp);//當位置有問題可以看看
-    }
-    else if (strcmp(temp, "BASE")==0)
-    {
-        save_srcpro[i].address_size=0;
-    }
-    else if (strcmp(temp, "LTORG")==0)
-    {
-        Srcpro_size++;
-        int j;
-        
-        
-        save_srcpro[i].address_size=0;
-    }
-    else if (strcmp(temp, "EQU")==0)
-    {
-        
-    }
-    else if (strcmp(temp, "END")==0)
-    {
-        int j;
-        
-        
-        
-    }
-    else if (strcmp(temp, "USE")==0)
-    {
-        int j=0,bool_block=0;
-        while (strcmp(block_locctr_arrary[j++].block_name, "NULL"))
+        else if (save_srcpro[i].exformat==true)
         {
-            if (strcmp(save_srcpro[i].optr_1, block_locctr_arrary[j].block_name))
+            
+            if (strcmp(temp, ptr->op_name)==0) {
+                int t=((int)pow(16, 1))*ptr->op_cod_int;
+                if (<#condition#>) {
+                    <#statements#>
+                }
+                printf("%x\n", t);
+                
+            }
+            else
+            {
+                while (ptr->next!=NULL) {
+                    if (strcmp(temp, ptr->op_name)==0) {
+                        
+                        break;
+                    }
+                    ptr=ptr->next;
+                }
+            }
+        }
+        else if (strcmp(temp, "WORD")==0)
+        {
+            save_srcpro[i].address_size=3;
+        }
+        else if (strcmp(temp, "RESW")==0)
+        {
+            save_srcpro[i].address_size=atoi(save_srcpro[i].optr_1)*3;
+            //                printf("%d ",save_srcpro[i].address_size);
+        }
+        else if (strcmp(temp, "RESB")==0)
+        {
+            save_srcpro[i].address_size=atoi(save_srcpro[i].optr_1);
+            //                                printf("%d ",save_srcpro[i].address_size);
+        }
+        else if (strcmp(temp, "BYTE")==0)
+        {
+            strcpy(temp, save_srcpro[i].optr_1);
+            strtok(temp, " ");
+            save_srcpro[i].address_size=strlen(temp)-3;
+            if (save_srcpro[i].optr_1[0]=='X')
+            {
+                save_srcpro[i].address_size/=2;
+            }
+            //                printf("%d %s",save_srcpro[i].address_size,temp);//當位置有問題可以看看
+        }
+        else if (strcmp(temp, "BASE")==0)
+        {
+            save_srcpro[i].address_size=0;
+        }
+        else if (strcmp(temp, "LTORG")==0)
+        {
+            Srcpro_size++;
+            int j;
+            
+            
+            save_srcpro[i].address_size=0;
+        }
+        else if (strcmp(temp, "EQU")==0)
+        {
+            
+        }
+        else if (strcmp(temp, "END")==0)
+        {
+            int j;
+            
+            
+            
+        }
+        else if (strcmp(temp, "USE")==0)
+        {
+            int j=0,bool_block=0;
+            while (strcmp(block_locctr_arrary[j++].block_name, "NULL"))
+            {
+                if (strcmp(save_srcpro[i].optr_1, block_locctr_arrary[j].block_name))
+                {
+                    
+                }
+            }
+            if (bool_block==1)
             {
                 
             }
         }
-        if (bool_block==1)
-        {
-            
-        }
-    }
-    else
-    {
-        int form=check_op_code(temp);
-        if(form!=-1)
-        {
-            save_srcpro[i].address_size=form;
-        }
         else
         {
-            save_srcpro[i].address_size=0;
-            //                    printf("- %s -\n",temp);
+            int form=check_op_code(temp);
+            if(form!=-1)
+            {
+                save_srcpro[i].address_size=form;
+            }
+            else
+            {
+                save_srcpro[i].address_size=0;
+                //                    printf("- %s -\n",temp);
+            }
         }
+   
     }
-    
-    
-    
-    
 }
 
 int main()
