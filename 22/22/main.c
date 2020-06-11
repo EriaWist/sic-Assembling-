@@ -172,7 +172,7 @@ void test_print_op_code()//測試用看op_code對不對-start
         {
             do
             {
-                printf("%s %s %s %s\n",ptr->op_name,ptr->op_m,ptr->op_format,ptr->op_cod);
+                printf("%5s %5s %5s %5s\n",ptr->op_name,ptr->op_m,ptr->op_format,ptr->op_cod);
                 if (ptr->next!=NULL)
                 {
                     ptr = ptr->next;
@@ -1066,7 +1066,7 @@ int main()
     init_op_cod_arr();
     red_op_code();
     init_LTORG_Arr();
-    //        test_print_op_code();//測試print_opOCD
+  
     init_red_srcpro();
     red_srcpro();
     //        printf("%d  %d",Hash("RSUB  "),Hash("RSUB"));//赫緒測試
@@ -1075,6 +1075,7 @@ int main()
     obj_code();
     test_print_srcpro();
     priint_symname();
+    test_print_op_code();//測試print_opOCD
     if (fp_w == NULL)
         return -1;
     fclose(fp_w);
