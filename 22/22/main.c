@@ -998,7 +998,11 @@ void obj_code()
                     }
                     //還沒處理xbpe
                     struct symname *sy_ptr=&symname_arr[Hash(save_srcpro[i].optr_1)];///這裡用這//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                    do {
+                    if(save_srcpro[i].optag=='#')
+                    {
+                        sprintf(save_srcpro[i].obj_code_str,"%03X%03x",t,atoi(save_srcpro[i].optr_1));
+                    }
+                    do {//比對符號跟ptr
                         char sy_temp[100];//空白清除用
                         strcpy(sy_temp, sy_ptr->name);//空白清除用
                         strtok(sy_temp, " ");//空白清除用
@@ -1029,7 +1033,7 @@ void obj_code()
                             }else{
                                 t+=4;
                                 lessAddress = sy_ptr->address-BASE;
-                                sprintf(save_srcpro[i].obj_code_str,"%03X%03d",t,lessAddress);
+                                sprintf(save_srcpro[i].obj_code_str,"%03X%03x",t,lessAddress);
                             }
                             t2=sy_ptr->address;
                             break;
@@ -1050,6 +1054,10 @@ void obj_code()
     }
 }
 
+void test_print_LITTAB()//常數表輸出
+{
+    
+}
 int main()
 {
     char reg1[100], reg2[100], reg3[100];
