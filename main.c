@@ -305,17 +305,18 @@ void test_print_srcpro()//測試輸出用-star
         {
             printf("%c",save_srcpro[i].optr);
         }
+        else
+        {
+            printf(" ");
+        }
         temp = save_srcpro[i].optr_2;
         if (temp!=NULL)  //第四段
         {
             //            printf("%c",save_srcpro[i].optr);
-            printf("%s",temp);
+            printf("%-5s",temp);
         }
-        else
-        {
-            //printf("%10s"," ");
-        }
-        printf(" %10s ",save_srcpro[i].obj_code_str);
+
+        printf(" %15s ",save_srcpro[i].obj_code_str);
         printf("\n");
         int j;
 
