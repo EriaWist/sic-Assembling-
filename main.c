@@ -1029,7 +1029,20 @@ void obj_code()
 
                             if(strcmp(LT_temp,srcpro_temp)==0)
                             {
-                                 printf("%s++%s\n",LT_temp,srcpro_temp);
+                                t+=2;
+                                int address = save_srcpro[i].address+save_srcpro[i].address_size;
+                                int lessAddress=LT_ptr->address-address;//相減判斷有沒有在範圍內
+                                if (lessAddress<=2047&&lessAddress>=-2048)
+                                {
+                                 sprintf(save_srcpro[i].obj_code_str,"%03X%03X",t,lessAddress);
+                                 printf("%s\n",save_srcpro[i].obj_code_str);
+                                }
+                                else
+                                {
+                                     t+=4;
+                                    lessAddress = sy_ptr->address-BASE;
+                                    sprintf(save_srcpro[i].obj_code_str,"%03X%03x",t,lessAddress);
+                                }
                             }
                             if(LT_ptr->next!=NULL)
                             {
