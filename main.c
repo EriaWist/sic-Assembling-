@@ -512,9 +512,13 @@ void get_address_size ()//算每一條指令站多少byte-開始
                         lt_temp2=strtok(NULL, "'");
                         sprintf(ptr->content,"%X%X%X",lt_temp2[0],lt_temp2[1],lt_temp2[2]);
 
-                    } else {
+                    } else if(ptr->name[0]=='X') {
 
-
+                        char lt_temp[10],*lt_temp2;
+                        strcpy(lt_temp,ptr->name);
+                        strtok(lt_temp, "'");
+                        lt_temp2=strtok(NULL, "'");
+                        sprintf(ptr->content,"%X%X%X",lt_temp2[0],lt_temp2[1],lt_temp2[2]);
                     }
 
                     while (ptr->next!=NULL)  //未測試可能有安全隱患
@@ -527,10 +531,15 @@ void get_address_size ()//算每一條指令站多少byte-開始
                         if(ptr->name[0]=='C')
                         {
                             // ptr->name[0]='\'';
+                            int j;
                             char lt_temp[10],*lt_temp2;
                             strcpy(lt_temp,ptr->name);
                             strtok(lt_temp, "'");
                             lt_temp2=strtok(NULL, "'");
+                            for(j=0;lt_temp2[j];j++)
+                            {
+
+                            }//用迴圈處理多樣的
                             sprintf(ptr->content,"%X%X%X",lt_temp2[0],lt_temp2[1],lt_temp2[2]);
 
                         }
