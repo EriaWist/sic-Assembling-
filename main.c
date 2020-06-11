@@ -493,6 +493,18 @@ void get_address_size ()//算每一條指令站多少byte-開始
                     block_locctr_arrary[use].address += strlen(ptr->name)-3;
                     ptr->isltorg=1;
                     ptr->use=use;
+                    if(ptr->name[0]=='C')
+                    {
+                       // ptr->name[0]='\'';
+                        char lt_temp[10],*lt_temp2;
+                        strcpy(lt_temp,ptr->name);
+                        strtok(lt_temp, "'");
+                        lt_temp2=strtok(NULL, "'");
+                        printf("%s\n",lt_temp2);
+                        sprintf(save_srcpro[i].obj_code_str,"%X",lt_temp2);
+
+                    }
+
                     while (ptr->next!=NULL)  //未測試可能有安全隱患
                     {
                         ptr=ptr->next;
@@ -953,11 +965,7 @@ void obj_code()
         }
         else if (strcmp(temp, "LTORG")==0)
         {
-            Srcpro_size++;
-            int j;
 
-
-            save_srcpro[i].address_size=0;
         }
         else if (strcmp(temp, "EQU")==0)
         {
