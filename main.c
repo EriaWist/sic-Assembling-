@@ -329,6 +329,7 @@ void test_print_srcpro()//測試輸出用-star
                 {
 
                     printf("   %04x      * %s",LTORG_Arr[j].address,LTORG_Arr[j].name);
+                    printf("%33X",ptr_lto->content);
                     printf("\n");
                 }
                 while(ptr_lto->next!=NULL)
@@ -337,6 +338,7 @@ void test_print_srcpro()//測試輸出用-star
                     if(strcmp(ptr_lto->name,"NULL")!=0&&ptr_lto->isltorg==1)
                     {
                         printf("   %04x      * %s",ptr_lto->address,ptr_lto->name);
+                        printf("%33X",ptr_lto->content);
                         printf("\n");
                     }
                 }
@@ -351,6 +353,7 @@ void test_print_srcpro()//測試輸出用-star
                 {
 
                     printf("   %04x      * %s",LTORG_Arr[j].address,LTORG_Arr[j].name);
+                    printf("%33X",ptr_lto->content);
                     printf("\n");
                 }
                 while(ptr_lto->next!=NULL)
@@ -360,6 +363,7 @@ void test_print_srcpro()//測試輸出用-star
                     {
 
                         printf("   %04x      * %s",ptr_lto->address,ptr_lto->name);
+                        printf("%33X",ptr_lto->content);
                         printf("\n");
                     }
 
