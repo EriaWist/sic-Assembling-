@@ -137,7 +137,7 @@ void red_op_code()//讀op_code-star
         if (ptr->op_cod[0]-'0'>=0&&ptr->op_cod[0]-'0'<=9)
         {
             char temp = ptr->op_cod[0];
-            ptr->op_cod_int+=atoi(&temp)*16;
+            ptr->op_cod_int+=(temp-'0')*16;
         }
         else
         {
@@ -148,8 +148,7 @@ void red_op_code()//讀op_code-star
         if (ptr->op_cod[1]-'0'>=0&&ptr->op_cod[1]-'0'<=9)
         {
             char temp = ptr->op_cod[1];
-            ptr->op_cod_int+=atoi(&temp);
-
+            ptr->op_cod_int+=temp-'0';
         }
         else
         {
@@ -994,6 +993,7 @@ void obj_code()
                 if (strcmp(temp, ptr->op_name)==0)
                 {
                     int t=((int)pow(16, 1))*ptr->op_cod_int,t2;
+
                     if (save_srcpro[i].optag=='#')
                     {
                         t+=1*(int)pow(16, 1);
@@ -1029,13 +1029,14 @@ void obj_code()
 
                             if(strcmp(LT_temp,srcpro_temp)==0)
                             {
-                                t+=2;
+
                                 int address = save_srcpro[i].address+save_srcpro[i].address_size;
                                 int lessAddress=LT_ptr->address-address;//相減判斷有沒有在範圍內
                                 if (lessAddress<=2047&&lessAddress>=-2048)
                                 {
+                                     t+=2;
                                  sprintf(save_srcpro[i].obj_code_str,"%03X%03X",t,lessAddress);
-                                 printf("%s\n",save_srcpro[i].obj_code_str);
+
                                 }
                                 else
                                 {
