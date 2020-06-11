@@ -941,7 +941,8 @@ void obj_code()
         }
         else if (strcmp(temp, "BASE")==0)
         {
-            save_srcpro[i].address_size=0;
+            
+//            BASE=save_srcpro[i].address;
         }
         else if (strcmp(temp, "LTORG")==0)
         {
@@ -1007,12 +1008,28 @@ void obj_code()
                         
                         // printf("%s\n",sy_temp);
                         if (strcmp(sy_temp,srcpro_temp)==0) {
+                            if (save_srcpro[i].optr==',') {
+                                t+=8;
+                            }
+                            if (strcmp(temp,"LDB")==0) {
+                                BASE=sy_ptr->address;
+                            }
                             int address = save_srcpro[i].address+save_srcpro[i].address_size;
                             int lessAddress=sy_ptr->address-address;//相減判斷有沒有在範圍內
                             if (lessAddress<=2047&&lessAddress>=-2048) {
                                 t+=2;
-                                sprintf(save_srcpro[i].obj_code_str,"%03x%03",t,lessAddress);
-                                printf("%x\n",lessAddress);
+                                char t_x[100],t_x2[4];
+                                int t_x_len;
+                                sprintf(t_x, "%03X",lessAddress);
+                                t_x_len=strlen(t_x);
+                                t_x2[0]=t_x[t_x_len-3];
+                                t_x2[1]=t_x[t_x_len-2];
+                                t_x2[2]=t_x[t_x_len-1];
+                                sprintf(save_srcpro[i].obj_code_str,"%03X%s",t,t_x2);
+                            }else{
+                                t+=4;
+                                lessAddress = sy_ptr->address-BASE;
+                                sprintf(save_srcpro[i].obj_code_str,"%03X%03d",t,lessAddress);
                             }
                             t2=sy_ptr->address;
                             break;
@@ -1022,7 +1039,6 @@ void obj_code()
                         sy_ptr=sy_ptr->next;
                     } while (1);
                     
-                    sprintf(save_srcpro[i].obj_code_str,"%03X%05X", t,t2);
                     break;
                 }
                 if (ptr->next==NULL)
