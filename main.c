@@ -1006,25 +1006,42 @@ void obj_code()
                     {
                         t+=3*(int)pow(16, 1);
                     }
-                    //還沒處理xbpe
                     struct symname *sy_ptr=&symname_arr[Hash(save_srcpro[i].optr_1)];///這裡用這//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                    struct LTORG *LT_ptr=&LTORG_Arr[Hash(save_srcpro[i].optr_1)];
                     if(save_srcpro[i].optag=='#')
                     {
                         sprintf(save_srcpro[i].obj_code_str,"%03X%03x",t,atoi(save_srcpro[i].optr_1));
                     }
                     if(save_srcpro[i].optag=='=')
                     {
-                        char sy_temp[100];//空白清除用
-                        strcpy(sy_temp, sy_ptr->name);//空白清除用
-                        strtok(sy_temp, " ");//空白清除用
-                        char srcpro_temp[100];//空白清除用
+
+                        char srcpro_temp[100],srcpro_temp2[100];//空白清除用
                         strcpy(srcpro_temp, save_srcpro[i].optr_1);//空白清除用
                         strtok(srcpro_temp, " ");//空白清除用
-
+                        struct LTORG *LT_ptr=&LTORG_Arr[Hash(save_srcpro[i].optr_1)];
+                        char LT_temp[100];//空白清除用
+                        strcpy(LT_temp, LT_ptr->name);//空白清除用
+                        strtok(LT_temp, " ");//空白清除用
                         while(1)
                         {
+                             strcpy(LT_temp, LT_ptr->name);//空白清除用
+                        strtok(LT_temp, " ");//空白清除用
+
+                            if(strcmp(LT_temp,srcpro_temp)==0)
+                            {
+                                 printf("%s++%s\n",LT_temp,srcpro_temp);
+                            }
+                            if(LT_ptr->next!=NULL)
+                            {
+                                LT_ptr=LT_ptr->next;
+                            }
+                            else
+                            {
+                                 break;
+                            }
 
                         }
+
                     }
 
                     do  //比對符號跟ptr
