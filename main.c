@@ -505,12 +505,15 @@ void get_address_size ()//算每一條指令站多少byte-開始
                     ptr->use=use;
                     if(ptr->name[0]=='C')
                     {
-                       // ptr->name[0]='\'';
+                        // ptr->name[0]='\'';
                         char lt_temp[10],*lt_temp2;
                         strcpy(lt_temp,ptr->name);
                         strtok(lt_temp, "'");
                         lt_temp2=strtok(NULL, "'");
                         sprintf(ptr->content,"%X%X%X",lt_temp2[0],lt_temp2[1],lt_temp2[2]);
+
+                    } else {
+
 
                     }
 
@@ -523,14 +526,15 @@ void get_address_size ()//算每一條指令站多少byte-開始
                         ptr->use=use;
                         if(ptr->name[0]=='C')
                         {
-                       // ptr->name[0]='\'';
-                        char lt_temp[10],*lt_temp2;
-                        strcpy(lt_temp,ptr->name);
-                        strtok(lt_temp, "'");
-                        lt_temp2=strtok(NULL, "'");
-                        sprintf(ptr->content,"%X%X%X",lt_temp2[0],lt_temp2[1],lt_temp2[2]);
+                            // ptr->name[0]='\'';
+                            char lt_temp[10],*lt_temp2;
+                            strcpy(lt_temp,ptr->name);
+                            strtok(lt_temp, "'");
+                            lt_temp2=strtok(NULL, "'");
+                            sprintf(ptr->content,"%X%X%X",lt_temp2[0],lt_temp2[1],lt_temp2[2]);
 
                         }
+
 
                     }
                 }
@@ -1052,8 +1056,8 @@ void obj_code()
                         strtok(LT_temp, " ");//空白清除用
                         while(1)
                         {
-                             strcpy(LT_temp, LT_ptr->name);//空白清除用
-                        strtok(LT_temp, " ");//空白清除用
+                            strcpy(LT_temp, LT_ptr->name);//空白清除用
+                            strtok(LT_temp, " ");//空白清除用
 
                             if(strcmp(LT_temp,srcpro_temp)==0)
                             {
@@ -1062,13 +1066,13 @@ void obj_code()
                                 int lessAddress=LT_ptr->address-address;//相減判斷有沒有在範圍內
                                 if (lessAddress<=2047&&lessAddress>=-2048)
                                 {
-                                     t+=2;
-                                 sprintf(save_srcpro[i].obj_code_str,"%03X%03X",t,lessAddress);
+                                    t+=2;
+                                    sprintf(save_srcpro[i].obj_code_str,"%03X%03X",t,lessAddress);
 
                                 }
                                 else
                                 {
-                                     t+=4;
+                                    t+=4;
                                     lessAddress = sy_ptr->address-BASE;
                                     sprintf(save_srcpro[i].obj_code_str,"%03X%03x",t,lessAddress);
                                 }
@@ -1079,7 +1083,7 @@ void obj_code()
                             }
                             else
                             {
-                                 break;
+                                break;
                             }
 
                         }
