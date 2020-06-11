@@ -29,6 +29,7 @@ struct LTORG
     char name[10];
     int isltorg;
     int use;
+    char content[100];
 } LTORG_Arr[HASH_SIZE];
 struct symname
 {
@@ -266,7 +267,7 @@ void test_print_srcpro()//測試輸出用-star
     for (i=0; i<Srcpro_size; i++)
     {
         printf("%2d ",i);
-        printf(" %8s ",save_srcpro[i].obj_code_str);
+
         char *temp;
         printf("%04x ",save_srcpro[i].address);
         temp = save_srcpro[i].symname;
@@ -298,7 +299,7 @@ void test_print_srcpro()//測試輸出用-star
         temp = save_srcpro[i].optr_1;
         if (temp!=NULL)  //第三店
         {
-            printf("%s",temp);
+            printf("%-10s",temp);
         }
         if (save_srcpro[i].optr!=NULL)  //符號 + - * / ,
         {
@@ -310,6 +311,11 @@ void test_print_srcpro()//測試輸出用-star
             //            printf("%c",save_srcpro[i].optr);
             printf("%s",temp);
         }
+        else
+        {
+            //printf("%10s"," ");
+        }
+        printf(" %10s ",save_srcpro[i].obj_code_str);
         printf("\n");
         int j;
 
@@ -320,7 +326,7 @@ void test_print_srcpro()//測試輸出用-star
                 struct LTORG *ptr_lto=&LTORG_Arr[j];
                 if(strcmp(LTORG_Arr[j].name,"NULL")!=0&&LTORG_Arr[j].isltorg==1)
                 {
-                    printf(" %8s ",save_srcpro[i].obj_code_str);
+
                     printf("   %04x      * %s",LTORG_Arr[j].address,LTORG_Arr[j].name);
                     printf("\n");
                 }
@@ -329,7 +335,6 @@ void test_print_srcpro()//測試輸出用-star
                     ptr_lto=ptr_lto->next;
                     if(strcmp(ptr_lto->name,"NULL")!=0&&ptr_lto->isltorg==1)
                     {
-                        printf(" %8s ",save_srcpro[i].obj_code_str);
                         printf("   %04x      * %s",ptr_lto->address,ptr_lto->name);
                         printf("\n");
                     }
@@ -343,7 +348,7 @@ void test_print_srcpro()//測試輸出用-star
                 struct LTORG *ptr_lto=&LTORG_Arr[j];
                 if(strcmp(LTORG_Arr[j].name,"NULL")!=0&&LTORG_Arr[j].isltorg==0)
                 {
-                    printf(" %8s ",save_srcpro[i].obj_code_str);
+
                     printf("   %04x      * %s",LTORG_Arr[j].address,LTORG_Arr[j].name);
                     printf("\n");
                 }
@@ -352,7 +357,7 @@ void test_print_srcpro()//測試輸出用-star
                     ptr_lto=ptr_lto->next;
                     if(strcmp(ptr_lto->name,"NULL")!=0&&ptr_lto->isltorg==0)
                     {
-                        printf(" %8s ",save_srcpro[i].obj_code_str);
+
                         printf("   %04x      * %s",ptr_lto->address,ptr_lto->name);
                         printf("\n");
                     }
@@ -500,8 +505,7 @@ void get_address_size ()//算每一條指令站多少byte-開始
                         strcpy(lt_temp,ptr->name);
                         strtok(lt_temp, "'");
                         lt_temp2=strtok(NULL, "'");
-                        printf("%s\n",lt_temp2);
-                        sprintf(save_srcpro[i].obj_code_str,"%X",lt_temp2);
+                        sprintf(ptr->content,"%X%X%X",lt_temp2[0],lt_temp2[1],lt_temp2[2]);
 
                     }
 
@@ -512,6 +516,17 @@ void get_address_size ()//算每一條指令站多少byte-開始
                         block_locctr_arrary[use].address += strlen(ptr->name)-3;
                         ptr->isltorg=1;
                         ptr->use=use;
+                        if(ptr->name[0]=='C')
+                        {
+                       // ptr->name[0]='\'';
+                        char lt_temp[10],*lt_temp2;
+                        strcpy(lt_temp,ptr->name);
+                        strtok(lt_temp, "'");
+                        lt_temp2=strtok(NULL, "'");
+                        sprintf(ptr->content,"%X%X%X",lt_temp2[0],lt_temp2[1],lt_temp2[2]);
+
+                        }
+
                     }
                 }
             }
