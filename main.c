@@ -1,11 +1,10 @@
 
-
 //
 //  main.c
 //  22
 //
 //  Created by 阿騰 on 2020/5/22.
-//  Copyright © 2020 阿騰. All rights reserved.
+//  Copyright c 2020 阿騰. All rights reserved.
 //
 #include <math.h>
 #include <stdbool.h>
@@ -163,6 +162,7 @@ void red_op_code()//讀op_code-star
     fclose(fp_r);
 
 }//讀op_code-end
+
 void test_print_op_code()//測試用看op_code對不對-start
 {
     int i;
@@ -329,7 +329,7 @@ void test_print_srcpro()//測試輸出用-star
                 {
 
                     printf("   %04x      * %s",LTORG_Arr[j].address,LTORG_Arr[j].name);
-                    printf("%33X",ptr_lto->content);
+                    printf("%33s",ptr_lto->content);
                     printf("\n");
                 }
                 while(ptr_lto->next!=NULL)
@@ -338,7 +338,7 @@ void test_print_srcpro()//測試輸出用-star
                     if(strcmp(ptr_lto->name,"NULL")!=0&&ptr_lto->isltorg==1)
                     {
                         printf("   %04x      * %s",ptr_lto->address,ptr_lto->name);
-                        printf("%33X",ptr_lto->content);
+                        printf("%33s",ptr_lto->content);
                         printf("\n");
                     }
                 }
@@ -353,7 +353,7 @@ void test_print_srcpro()//測試輸出用-star
                 {
 
                     printf("   %04x      * %s",LTORG_Arr[j].address,LTORG_Arr[j].name);
-                    printf("%33X",ptr_lto->content);
+                    printf("%33s",ptr_lto->content);
                     printf("\n");
                 }
                 while(ptr_lto->next!=NULL)
@@ -363,7 +363,7 @@ void test_print_srcpro()//測試輸出用-star
                     {
 
                         printf("   %04x      * %s",ptr_lto->address,ptr_lto->name);
-                        printf("%33X",ptr_lto->content);
+                        printf("%33s",ptr_lto->content);
                         printf("\n");
                     }
 
@@ -497,7 +497,7 @@ void get_address_size ()//算每一條指令站多少byte-開始
             for (j=0; j<HASH_SIZE; j++)
             {
                 struct LTORG *ptr=&LTORG_Arr[j];
-                if (strcmp(ptr->name, "NULL")!=0)  //當不等於NULL
+                if (strcmp(ptr->name, "NULL")!=0)  //當不等於NULL 這裡是看陣列第一個是不是
                 {
                     ptr->address = block_locctr_arrary[use].address;
                     block_locctr_arrary[use].address += strlen(ptr->name)-3;
@@ -510,18 +510,27 @@ void get_address_size ()//算每一條指令站多少byte-開始
                         strcpy(lt_temp,ptr->name);
                         strtok(lt_temp, "'");
                         lt_temp2=strtok(NULL, "'");
-                        sprintf(ptr->content,"%X%X%X",lt_temp2[0],lt_temp2[1],lt_temp2[2]);
 
-                    } else if(ptr->name[0]=='X') {
+                        int k;
+                        strcpy(ptr->content,"");//歸零
+
+                        for(k=0; k<strlen(lt_temp2); k++)
+                        {
+                            sprintf(ptr->content,"%s%X",ptr->content,lt_temp2[k]);//拼接16進ascii
+                        }
+
+                    }
+                    else if(ptr->name[0]=='X')
+                    {
 
                         char lt_temp[10],*lt_temp2;
                         strcpy(lt_temp,ptr->name);
                         strtok(lt_temp, "'");
                         lt_temp2=strtok(NULL, "'");
-                        sprintf(ptr->content,"%X%X%X",lt_temp2[0],lt_temp2[1],lt_temp2[2]);
+                        strcpy(ptr->content,lt_temp2);//因為16進位不需要再轉換
                     }
 
-                    while (ptr->next!=NULL)  //未測試可能有安全隱患
+                    while (ptr->next!=NULL)  //未測試可能有安全隱患 這裡看後面接上的對不對
                     {
                         ptr=ptr->next;
                         ptr->address = block_locctr_arrary[use].address;
@@ -536,13 +545,25 @@ void get_address_size ()//算每一條指令站多少byte-開始
                             strcpy(lt_temp,ptr->name);
                             strtok(lt_temp, "'");
                             lt_temp2=strtok(NULL, "'");
-                            for(j=0;lt_temp2[j];j++)
-                            {
+                            int k;
+                            strcpy(ptr->content,"");//歸零
 
-                            }//用迴圈處理多樣的
-                            sprintf(ptr->content,"%X%X%X",lt_temp2[0],lt_temp2[1],lt_temp2[2]);
+                            for(k=0; k<strlen(lt_temp2); k++)
+                            {
+                                sprintf(ptr->content,"%s%X",ptr->content,lt_temp2[k]);//拼接16進ascii
+                            }
+
 
                         }
+                        else if(ptr->name[0]=='X')
+                            {
+
+                                char lt_temp[10],*lt_temp2;
+                                strcpy(lt_temp,ptr->name);
+                                strtok(lt_temp, "'");
+                                lt_temp2=strtok(NULL, "'");
+                                strcpy(ptr->content,lt_temp2);//因為16進位不需要再轉換
+                            }
 
 
                     }
@@ -572,6 +593,34 @@ void get_address_size ()//算每一條指令站多少byte-開始
                         block_locctr_arrary[use].address += strlen(ptr->name)-3;
                         ptr->isltorg=0;
                         ptr->use=use;
+                         if(ptr->name[0]=='C')
+                        {
+                            // ptr->name[0]='\'';
+                            int j;
+                            char lt_temp[10],*lt_temp2;
+                            strcpy(lt_temp,ptr->name);
+                            strtok(lt_temp, "'");
+                            lt_temp2=strtok(NULL, "'");
+                            int k;
+                            strcpy(ptr->content,"");//歸零
+
+                            for(k=0; k<strlen(lt_temp2); k++)
+                            {
+                                sprintf(ptr->content,"%s%X",ptr->content,lt_temp2[k]);//拼接16進ascii
+                            }
+
+
+                        }
+                         else if(ptr->name[0]=='X')
+                            {
+
+                                char lt_temp[10],*lt_temp2;
+                                strcpy(lt_temp,ptr->name);
+                                strtok(lt_temp, "'");
+                                lt_temp2=strtok(NULL, "'");
+                                strcpy(ptr->content,lt_temp2);//因為16進位不需要再轉換
+                            }
+
                     }
                     while (ptr->next!=NULL)  //未測試可能有安全隱患
                     {
@@ -582,6 +631,33 @@ void get_address_size ()//算每一條指令站多少byte-開始
                             block_locctr_arrary[use].address += strlen(ptr->name)-3;
                             ptr->isltorg=0;
                             ptr->use=use;
+                             if(ptr->name[0]=='C')
+                        {
+                            // ptr->name[0]='\'';
+                            int j;
+                            char lt_temp[10],*lt_temp2;
+                            strcpy(lt_temp,ptr->name);
+                            strtok(lt_temp, "'");
+                            lt_temp2=strtok(NULL, "'");
+                            int k;
+                            strcpy(ptr->content,"");//歸零
+
+                            for(k=0; k<strlen(lt_temp2); k++)
+                            {
+                                sprintf(ptr->content,"%s%X",ptr->content,lt_temp2[k]);//拼接16進ascii
+                            }
+
+
+                        }
+                         else if(ptr->name[0]=='X')
+                            {
+
+                                char lt_temp[10],*lt_temp2;
+                                strcpy(lt_temp,ptr->name);
+                                strtok(lt_temp, "'");
+                                lt_temp2=strtok(NULL, "'");
+                                strcpy(ptr->content,lt_temp2);//因為16進位不需要再轉換
+                            }
                         }
                     }
                 }
@@ -915,7 +991,7 @@ void obj_code()
         {
 
         }
-        else if (save_srcpro[i].exformat==true)
+        else if (save_srcpro[i].exformat==true)//exformat 4 格式四
         {
             do
             {
@@ -1201,3 +1277,4 @@ int main()
         return -1;
     fclose(fp_w);
 }
+
