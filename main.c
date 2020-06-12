@@ -1053,31 +1053,20 @@ void obj_code()
         else if (strcmp(temp, "BYTE")==0)
         {
 
-             if(save_srcpro[i].optr_1[0]=='C')
-                    {
-                        char lt_temp[10],*lt_temp2;
-                        strcpy(lt_temp,save_srcpro[i].optr_1);
-                        strtok(lt_temp, "'");
-                        lt_temp2=strtok(NULL, "'");
+            if(save_srcpro[i].optr_1[0]=='C')
+            {
+                    //好像有問題
 
-                        int k;
-                        strcpy(save_srcpro[i].obj_code_str,"");//歸零
-
-                        for(k=0; k<strlen(lt_temp2); k++)
-                        {
-                            sprintf(save_srcpro[i].obj_code_str,"%s%X",save_srcpro[i].obj_code_str,lt_temp2[k]);//拼接16進ascii
-                        }
-
-                    }
-                    else if(save_srcpro[i].optr_1[0]=='X')
-                    {
-
-                        char lt_temp[10],*lt_temp2;
-                        strcpy(lt_temp,save_srcpro[i].optr_1);
-                        strtok(lt_temp, "'");
-                        lt_temp2=strtok(NULL, "'");
-                        strcpy(save_srcpro[i].obj_code_str,lt_temp2);//因為16進位不需要再轉換
-                    }
+            }
+            else if(save_srcpro[i].optr_1[0]=='X')
+            {
+                printf("%s\n",save_srcpro[i].optr_1);
+                char lt_temp[10],*lt_temp2;
+                strcpy(lt_temp,save_srcpro[i].optr_1);
+                strtok(lt_temp, "'");
+                lt_temp2=strtok(NULL, "'");
+                strcpy(save_srcpro[i].obj_code_str,lt_temp2);//因為16進位不需要再轉換
+            }
         }
         else if (strcmp(temp, "BASE")==0)
         {
@@ -1207,7 +1196,7 @@ void obj_code()
                         char reg_temp1[2],reg_temp2[2];
                         sprintf(reg_temp1,"%c",srcpro_temp[0]);
                         sprintf(reg_temp2,"%c",srcpro_temp[2]);
-                        for(j=0;j<=9;j++)
+                        for(j=0; j<=9; j++)
                         {
                             if(strcmp(srcpro_temp,regs_name[j])==0)
                             {
@@ -1217,7 +1206,7 @@ void obj_code()
                             else if(strcmp(reg_temp1,regs_name[j])==0&&strcmp(save_srcpro[i].opcode,"COMPR ")==0)
                             {
                                 int k;
-                                for(k=0;k<=9;k++)
+                                for(k=0; k<=9; k++)
                                 {
                                     if(strcmp(reg_temp2,regs_name[k])==0)
                                     {
