@@ -1052,14 +1052,32 @@ void obj_code()
         }
         else if (strcmp(temp, "BYTE")==0)
         {
-            strcpy(temp, save_srcpro[i].optr_1);
-            strtok(temp, " ");
-            save_srcpro[i].address_size=strlen(temp)-3;
-            if (save_srcpro[i].optr_1[0]=='X')
-            {
-                save_srcpro[i].address_size/=2;
-            }
-            //                printf("%d %s",save_srcpro[i].address_size,temp);//當位置有問題可以看看
+
+             if(save_srcpro[i].optr_1[0]=='C')
+                    {
+                        char lt_temp[10],*lt_temp2;
+                        strcpy(lt_temp,save_srcpro[i].optr_1);
+                        strtok(lt_temp, "'");
+                        lt_temp2=strtok(NULL, "'");
+
+                        int k;
+                        strcpy(save_srcpro[i].obj_code_str,"");//歸零
+
+                        for(k=0; k<strlen(lt_temp2); k++)
+                        {
+                            sprintf(save_srcpro[i].obj_code_str,"%s%X",save_srcpro[i].obj_code_str,lt_temp2[k]);//拼接16進ascii
+                        }
+
+                    }
+                    else if(save_srcpro[i].optr_1[0]=='X')
+                    {
+
+                        char lt_temp[10],*lt_temp2;
+                        strcpy(lt_temp,save_srcpro[i].optr_1);
+                        strtok(lt_temp, "'");
+                        lt_temp2=strtok(NULL, "'");
+                        strcpy(save_srcpro[i].obj_code_str,lt_temp2);//因為16進位不需要再轉換
+                    }
         }
         else if (strcmp(temp, "BASE")==0)
         {
