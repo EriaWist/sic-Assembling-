@@ -21,7 +21,7 @@ struct block_locctr//存use空間
     char block_name[10];
     int address;
 } block_locctr_arrary[MAX_block_locctr_SIZE];
-struct LTORG
+struct LTORG//常數表 
 {
     int address;
     struct LTORG *next;
@@ -1116,13 +1116,13 @@ void obj_code()
                     {
                         t+=3*(int)pow(16, 1);
                     }
-                    struct symname *sy_ptr=&symname_arr[Hash(save_srcpro[i].optr_1)];///這裡用這//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                    struct LTORG *LT_ptr=&LTORG_Arr[Hash(save_srcpro[i].optr_1)];
+                    struct symname *sy_ptr=&symname_arr[Hash(save_srcpro[i].optr_1)];//取得符號在赫序表裡面   sy_ptr =在赫序表裡的 optr_1
+                    struct LTORG *LT_ptr=&LTORG_Arr[Hash(save_srcpro[i].optr_1)];//常數表 
                     if(save_srcpro[i].optag=='#')
                     {
                         sprintf(save_srcpro[i].obj_code_str,"%03X%03x",t,atoi(save_srcpro[i].optr_1));
                     }
-                    if(save_srcpro[i].optag=='=')
+                    if(save_srcpro[i].optag=='=')//等於走長數表 
                     {
 
                         char srcpro_temp[100],srcpro_temp2[100];//空白清除用
