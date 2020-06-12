@@ -1186,11 +1186,27 @@ void obj_code()
                     {
 
                         int j;
+                        char reg_temp1[2],reg_temp2[2];
+                        sprintf(reg_temp1,"%c",srcpro_temp[0]);
+                        sprintf(reg_temp2,"%c",srcpro_temp[2]);
                         for(j=0;j<=9;j++)
                         {
                             if(strcmp(srcpro_temp,regs_name[j])==0)
                             {
-                                printf("%s\n",regs_name[j]);
+                                t=((int)pow(16, 1))*ptr->op_cod_int;
+                                sprintf(save_srcpro[i].obj_code_str,"%03X0",t+j);
+                            }
+                            else if(strcmp(reg_temp1,regs_name[j])==0&&strcmp(save_srcpro[i].opcode,"COMPR ")==0)
+                            {
+                                int k;
+                                for(k=0;k<=9;k++)
+                                {
+                                    if(strcmp(reg_temp2,regs_name[k])==0)
+                                    {
+                                        t=((int)pow(16, 1))*ptr->op_cod_int;
+                                        sprintf(save_srcpro[i].obj_code_str,"%03X%X",t+j,k);
+                                    }
+                                }
                             }
                         }
 
