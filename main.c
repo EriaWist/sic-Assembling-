@@ -868,8 +868,6 @@ void equ()
                         if (strcmp(EQU_temp, ptr->name)==0)
                         {
                             op_2=ptr->address;
-
-
                         }
                         while (ptr->next!=NULL)
                         {
@@ -882,9 +880,6 @@ void equ()
 
                             }
                         }
-
-
-
                     }
 
                     char Now_EQU_temp[100];//空白清除用
@@ -908,8 +903,6 @@ void equ()
                             }
                         }
                     }
-
-
                     if(save_srcpro[i].optr=='-')
                     {
 
@@ -1107,9 +1100,9 @@ void obj_code()
             //這裡繼續
             do
             {
-                if (strcmp(temp, ptr->op_name)==0)
+                if (strcmp(temp, ptr->op_name)==0)//比較 op_code temp為 save_srcpro[i].opcode
                 {
-                    int t=((int)pow(16, 1))*ptr->op_cod_int,t2;
+                    int t=((int)pow(16, 1))*ptr->op_cod_int,t2;//把op_code從字串轉成0XF 16進位 t為op ni xbpe 
 
                     if (save_srcpro[i].optag=='#')
                     {
