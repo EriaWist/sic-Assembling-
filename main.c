@@ -1142,13 +1142,13 @@ void obj_code()
 
                                 int address = save_srcpro[i].address+save_srcpro[i].address_size;
                                 int lessAddress=LT_ptr->address-address;//相減判斷有沒有在範圍內
-                                if (lessAddress<=2047&&lessAddress>=-2048)
+                                if (lessAddress<=2047&&lessAddress>=-2048)//用pc 
                                 {
                                     t+=2;
                                     sprintf(save_srcpro[i].obj_code_str,"%03X%03X",t,lessAddress);
 
                                 }
-                                else
+                                else//用BASE 
                                 {
                                     t+=4;
                                     lessAddress = sy_ptr->address-BASE;
