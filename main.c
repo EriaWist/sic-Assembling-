@@ -16,12 +16,13 @@
 #define MAX_block_locctr_SIZE 100//use空間表
 int Srcpro_size=0;
 int BASE=0;
+char regs_name[][4] = {"A","X","L","B","S","T","F","","PC","SW"};
 struct block_locctr//存use空間
 {
     char block_name[10];
     int address;
 } block_locctr_arrary[MAX_block_locctr_SIZE];
-struct LTORG//常數表 
+struct LTORG//常數表
 {
     int address;
     struct LTORG *next;
@@ -556,14 +557,14 @@ void get_address_size ()//算每一條指令站多少byte-開始
 
                         }
                         else if(ptr->name[0]=='X')
-                            {
+                        {
 
-                                char lt_temp[10],*lt_temp2;
-                                strcpy(lt_temp,ptr->name);
-                                strtok(lt_temp, "'");
-                                lt_temp2=strtok(NULL, "'");
-                                strcpy(ptr->content,lt_temp2);//因為16進位不需要再轉換
-                            }
+                            char lt_temp[10],*lt_temp2;
+                            strcpy(lt_temp,ptr->name);
+                            strtok(lt_temp, "'");
+                            lt_temp2=strtok(NULL, "'");
+                            strcpy(ptr->content,lt_temp2);//因為16進位不需要再轉換
+                        }
 
 
                     }
@@ -593,7 +594,7 @@ void get_address_size ()//算每一條指令站多少byte-開始
                         block_locctr_arrary[use].address += strlen(ptr->name)-3;
                         ptr->isltorg=0;
                         ptr->use=use;
-                         if(ptr->name[0]=='C')
+                        if(ptr->name[0]=='C')
                         {
                             // ptr->name[0]='\'';
                             int j;
@@ -611,15 +612,15 @@ void get_address_size ()//算每一條指令站多少byte-開始
 
 
                         }
-                         else if(ptr->name[0]=='X')
-                            {
+                        else if(ptr->name[0]=='X')
+                        {
 
-                                char lt_temp[10],*lt_temp2;
-                                strcpy(lt_temp,ptr->name);
-                                strtok(lt_temp, "'");
-                                lt_temp2=strtok(NULL, "'");
-                                strcpy(ptr->content,lt_temp2);//因為16進位不需要再轉換
-                            }
+                            char lt_temp[10],*lt_temp2;
+                            strcpy(lt_temp,ptr->name);
+                            strtok(lt_temp, "'");
+                            lt_temp2=strtok(NULL, "'");
+                            strcpy(ptr->content,lt_temp2);//因為16進位不需要再轉換
+                        }
 
                     }
                     while (ptr->next!=NULL)  //未測試可能有安全隱患
@@ -631,25 +632,25 @@ void get_address_size ()//算每一條指令站多少byte-開始
                             block_locctr_arrary[use].address += strlen(ptr->name)-3;
                             ptr->isltorg=0;
                             ptr->use=use;
-                             if(ptr->name[0]=='C')
-                        {
-                            // ptr->name[0]='\'';
-                            int j;
-                            char lt_temp[10],*lt_temp2;
-                            strcpy(lt_temp,ptr->name);
-                            strtok(lt_temp, "'");
-                            lt_temp2=strtok(NULL, "'");
-                            int k;
-                            strcpy(ptr->content,"");//歸零
-
-                            for(k=0; k<strlen(lt_temp2); k++)
+                            if(ptr->name[0]=='C')
                             {
-                                sprintf(ptr->content,"%s%X",ptr->content,lt_temp2[k]);//拼接16進ascii
+                                // ptr->name[0]='\'';
+                                int j;
+                                char lt_temp[10],*lt_temp2;
+                                strcpy(lt_temp,ptr->name);
+                                strtok(lt_temp, "'");
+                                lt_temp2=strtok(NULL, "'");
+                                int k;
+                                strcpy(ptr->content,"");//歸零
+
+                                for(k=0; k<strlen(lt_temp2); k++)
+                                {
+                                    sprintf(ptr->content,"%s%X",ptr->content,lt_temp2[k]);//拼接16進ascii
+                                }
+
+
                             }
-
-
-                        }
-                         else if(ptr->name[0]=='X')
+                            else if(ptr->name[0]=='X')
                             {
 
                                 char lt_temp[10],*lt_temp2;
@@ -1102,7 +1103,7 @@ void obj_code()
             {
                 if (strcmp(temp, ptr->op_name)==0)//比較 op_code temp為 save_srcpro[i].opcode
                 {
-                    int t=((int)pow(16, 1))*ptr->op_cod_int,t2;//把op_code從字串轉成0XF 16進位 t為op ni xbpe 
+                    int t=((int)pow(16, 1))*ptr->op_cod_int,t2;//把op_code從字串轉成0XF 16進位 t為op ni xbpe
 
                     if (save_srcpro[i].optag=='#')
                     {
@@ -1117,56 +1118,12 @@ void obj_code()
                         t+=3*(int)pow(16, 1);
                     }
                     struct symname *sy_ptr=&symname_arr[Hash(save_srcpro[i].optr_1)];//取得符號在赫序表裡面   sy_ptr =在赫序表裡的 optr_1
-                    struct LTORG *LT_ptr=&LTORG_Arr[Hash(save_srcpro[i].optr_1)];//常數表 
+                    struct LTORG *LT_ptr=&LTORG_Arr[Hash(save_srcpro[i].optr_1)];//常數表
                     if(save_srcpro[i].optag=='#')
                     {
-                        sprintf(save_srcpro[i].obj_code_str,"%03X%03x",t,atoi(save_srcpro[i].optr_1));
+                        sprintf(save_srcpro[i].obj_code_str,"%03X%03X",t,atoi(save_srcpro[i].optr_1));
                     }
-                    if(save_srcpro[i].optag=='=')//等於走長數表 
-                    {
 
-                        char srcpro_temp[100],srcpro_temp2[100];//空白清除用
-                        strcpy(srcpro_temp, save_srcpro[i].optr_1);//空白清除用
-                        strtok(srcpro_temp, " ");//空白清除用
-                        struct LTORG *LT_ptr=&LTORG_Arr[Hash(save_srcpro[i].optr_1)];
-                        char LT_temp[100];//空白清除用
-                        strcpy(LT_temp, LT_ptr->name);//空白清除用
-                        strtok(LT_temp, " ");//空白清除用
-                        while(1)
-                        {
-                            strcpy(LT_temp, LT_ptr->name);//空白清除用
-                            strtok(LT_temp, " ");//空白清除用
-
-                            if(strcmp(LT_temp,srcpro_temp)==0)
-                            {
-
-                                int address = save_srcpro[i].address+save_srcpro[i].address_size;
-                                int lessAddress=LT_ptr->address-address;//相減判斷有沒有在範圍內
-                                if (lessAddress<=2047&&lessAddress>=-2048)//用pc 
-                                {
-                                    t+=2;
-                                    sprintf(save_srcpro[i].obj_code_str,"%03X%03X",t,lessAddress);
-
-                                }
-                                else//用BASE 
-                                {
-                                    t+=4;
-                                    lessAddress = sy_ptr->address-BASE;
-                                    sprintf(save_srcpro[i].obj_code_str,"%03X%03x",t,lessAddress);
-                                }
-                            }
-                            if(LT_ptr->next!=NULL)
-                            {
-                                LT_ptr=LT_ptr->next;
-                            }
-                            else
-                            {
-                                break;
-                            }
-
-                        }
-
-                    }
 
                     do  //比對符號跟ptr
                     {
@@ -1178,7 +1135,7 @@ void obj_code()
                         strtok(srcpro_temp, " ");//空白清除用
 
                         // printf("%s\n",sy_temp);
-                        if (strcmp(sy_temp,srcpro_temp)==0)
+                        if (strcmp(sy_temp,srcpro_temp)==0)//sy_temp是符號名稱  srcpro_temp是save_srcpro的符號
                         {
                             if (save_srcpro[i].optr==',')
                             {
@@ -1216,6 +1173,77 @@ void obj_code()
                         sy_ptr=sy_ptr->next;
                     }
                     while (1);
+
+                    //處理特殊記憶體A X S-star
+                    char srcpro_temp[100];//空白清除用
+                    strcpy(srcpro_temp, save_srcpro[i].optr_1);//空白清除用
+                    strtok(srcpro_temp, " ");//空白清除用
+                    if(strcmp("",srcpro_temp)==0)
+                    {
+                        sprintf(save_srcpro[i].obj_code_str,"%03X000",t);
+                    }
+                    else//處理特殊記憶體A X S-star
+                    {
+
+                        int j;
+                        for(j=0;j<=9;j++)
+                        {
+                            if(strcmp(srcpro_temp,regs_name[j])==0)
+                            {
+                                printf("%s\n",regs_name[j]);
+                            }
+                        }
+
+
+                    }
+
+                    //處理特殊記憶體A X S-end
+
+                    if(save_srcpro[i].optag=='=')//等於走長數表
+                    {
+
+                        char srcpro_temp[100],srcpro_temp2[100];//空白清除用
+                        strcpy(srcpro_temp, save_srcpro[i].optr_1);//空白清除用
+                        strtok(srcpro_temp, " ");//空白清除用
+                        struct LTORG *LT_ptr=&LTORG_Arr[Hash(save_srcpro[i].optr_1)];
+                        char LT_temp[100];//空白清除用
+                        strcpy(LT_temp, LT_ptr->name);//空白清除用
+                        strtok(LT_temp, " ");//空白清除用
+                        while(1)
+                        {
+                            strcpy(LT_temp, LT_ptr->name);//空白清除用
+                            strtok(LT_temp, " ");//空白清除用
+
+                            if(strcmp(LT_temp,srcpro_temp)==0)
+                            {
+
+                                int address = save_srcpro[i].address+save_srcpro[i].address_size;
+                                int lessAddress=LT_ptr->address-address;//相減判斷有沒有在範圍內
+                                if (lessAddress<=2047&&lessAddress>=-2048)//用pc
+                                {
+                                    t+=2;
+                                    sprintf(save_srcpro[i].obj_code_str,"%03X%03X",t,lessAddress);
+
+                                }
+                                else//用BASE
+                                {
+                                    t+=4;
+                                    lessAddress = sy_ptr->address-BASE;
+                                    sprintf(save_srcpro[i].obj_code_str,"%03X%03x",t,lessAddress);
+                                }
+                            }
+                            if(LT_ptr->next!=NULL)
+                            {
+                                LT_ptr=LT_ptr->next;
+                            }
+                            else
+                            {
+                                break;
+                            }
+
+                        }
+
+                    }
 
                     break;
                 }
