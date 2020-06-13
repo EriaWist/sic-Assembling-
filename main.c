@@ -1390,9 +1390,13 @@ void print_obj_cod()
              sprintf(address_arr[add_i++].address_char,"%s",save_srcpro[i].obj_code_str);
         }
     }
+    int address=0;
+    printf("T %X",address);
     for (i=0; i<add_i; i++)
     {
+
         printf("%s %d\n",address_arr[i].address_char,strlen(address_arr[i].address_char)/2);
+        address+=strlen(address_arr[i].address_char)/2;
     }
 
 }
