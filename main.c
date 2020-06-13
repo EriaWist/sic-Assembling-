@@ -1338,7 +1338,7 @@ void print_obj_cod()
                 struct LTORG *ptr_lto=&LTORG_Arr[j];
                 if(strcmp(LTORG_Arr[j].name,"NULL")!=0&&LTORG_Arr[j].isltorg==1)
                 {
-
+                     printf("%s\n",LTORG_Arr[j].content);
 
                 }
                 while(ptr_lto->next!=NULL)
@@ -1346,9 +1346,7 @@ void print_obj_cod()
                     ptr_lto=ptr_lto->next;
                     if(strcmp(ptr_lto->name,"NULL")!=0&&ptr_lto->isltorg==1)
                     {
-                        printf("   %04x      * %s",ptr_lto->address,ptr_lto->name);
-                        printf("%33s",ptr_lto->content);
-                        printf("\n");
+                         printf("%s\n",ptr_lto->content);
                     }
                 }
             }
@@ -1361,9 +1359,7 @@ void print_obj_cod()
                 if(strcmp(LTORG_Arr[j].name,"NULL")!=0&&LTORG_Arr[j].isltorg==0)
                 {
 
-                    printf("   %04x      * %s",LTORG_Arr[j].address,LTORG_Arr[j].name);
-                    printf("%33s",ptr_lto->content);
-                    printf("\n");
+                     printf("%s\n",ptr_lto->content);
                 }
                 while(ptr_lto->next!=NULL)
                 {
@@ -1371,14 +1367,16 @@ void print_obj_cod()
                     if(strcmp(ptr_lto->name,"NULL")!=0&&ptr_lto->isltorg==0)
                     {
 
-                        printf("   %04x      * %s",ptr_lto->address,ptr_lto->name);
-                        printf("%33s",ptr_lto->content);
-                        printf("\n");
+                         printf("%s\n",ptr_lto->content);
                     }
 
                 }
             }
         }
+
+
+            printf("%s\n",save_srcpro[i].obj_code_str);
+
 
     }
 }
@@ -1401,6 +1399,7 @@ int main()
     priint_symname();
     test_print_op_code();//測試print_opOCD
     test_print_LITTAB();
+    print_obj_cod();
     if (fp_w == NULL)
         return -1;
     fclose(fp_w);
