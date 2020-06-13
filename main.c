@@ -1372,10 +1372,13 @@ void print_obj_cod()
 
                 }
             }
+        }else if(strcmp(save_srcpro[i].obj_code_str,"")!=0)
+        {
+             printf("%s\n",save_srcpro[i].obj_code_str);
         }
 
 
-            printf("%s\n",save_srcpro[i].obj_code_str);
+
 
 
     }
