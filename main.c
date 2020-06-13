@@ -17,6 +17,13 @@
 int Srcpro_size=0;
 int BASE=0;
 char regs_name[][4] = {"A","X","L","B","S","T","F","","PC","SW"};
+struct obj_arr_address
+{
+    int address_int;
+    char address_char[10];
+
+
+}address_arr[MAX_Srcpro_SIZE];
 struct block_locctr//存use空間
 {
     char block_name[10];
