@@ -38,6 +38,7 @@ struct LTORG//常數表
     int isltorg;
     int use;
     char content[100];
+    int size;
 } LTORG_Arr[HASH_SIZE];
 struct symname
 {
@@ -509,6 +510,7 @@ void get_address_size ()//算每一條指令站多少byte-開始
                 if (strcmp(ptr->name, "NULL")!=0)  //當不等於NULL 這裡是看陣列第一個是不是
                 {
                     ptr->address = block_locctr_arrary[use].address;
+                    ptr->size=strlen(ptr->name)-3;//
                     block_locctr_arrary[use].address += strlen(ptr->name)-3;
                     ptr->isltorg=1;
                     ptr->use=use;
@@ -537,12 +539,14 @@ void get_address_size ()//算每一條指令站多少byte-開始
                         strtok(lt_temp, "'");
                         lt_temp2=strtok(NULL, "'");
                         strcpy(ptr->content,lt_temp2);//因為16進位不需要再轉換
+                        ptr->size=(strlen(ptr->name)-3)/2;
                     }
 
                     while (ptr->next!=NULL)  //未測試可能有安全隱患 這裡看後面接上的對不對
                     {
                         ptr=ptr->next;
                         ptr->address = block_locctr_arrary[use].address;
+                        ptr->size=strlen(ptr->name)-3;
                         block_locctr_arrary[use].address += strlen(ptr->name)-3;
                         ptr->isltorg=1;
                         ptr->use=use;
@@ -572,6 +576,7 @@ void get_address_size ()//算每一條指令站多少byte-開始
                             strtok(lt_temp, "'");
                             lt_temp2=strtok(NULL, "'");
                             strcpy(ptr->content,lt_temp2);//因為16進位不需要再轉換
+                             ptr->size=(strlen(ptr->name)-3)/2;
                         }
 
 
@@ -603,6 +608,7 @@ void get_address_size ()//算每一條指令站多少byte-開始
                         ptr->use=use;
                         if(ptr->name[0]=='C')
                         {
+                            ptr->size=strlen(ptr->name)-3;
                             block_locctr_arrary[use].address += strlen(ptr->name)-3;
                             // ptr->name[0]='\'';
                             int j;
@@ -628,6 +634,7 @@ void get_address_size ()//算每一條指令站多少byte-開始
                             strtok(lt_temp, "'");
                             lt_temp2=strtok(NULL, "'");
                             strcpy(ptr->content,lt_temp2);//因為16進位不需要再轉換
+                             ptr->size=(strlen(ptr->name)-3)/2;
                         }
 
                     }
@@ -667,6 +674,7 @@ void get_address_size ()//算每一條指令站多少byte-開始
                                 strtok(lt_temp, "'");
                                 lt_temp2=strtok(NULL, "'");
                                 strcpy(ptr->content,lt_temp2);//因為16進位不需要再轉換
+                                 ptr->size=(strlen(ptr->name)-3)/2;
                             }
                         }
                     }
@@ -1381,6 +1389,10 @@ void print_obj_cod()
         {
              sprintf(address_arr[add_i++].address_char,"%s",save_srcpro[i].obj_code_str);
         }
+    }
+    for (i=0; i<add_i; i++)
+    {
+        printf("%s %d\n",address_arr[i].address_char,strlen(address_arr[i].address_char)/2);
     }
 
 }
