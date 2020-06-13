@@ -1312,7 +1312,7 @@ void test_print_LITTAB()//常數表輸出
 void print_obj_cod()
 {
     printf("H %s %04X %X \n",save_srcpro[0].symname,save_srcpro[0].address,block_locctr_arrary[0].address-save_srcpro[0].address);
-     int i,f=0;
+     int i,f=0,add_i=0;
     for (i=0; i<Srcpro_size; i++)
     {
         //printf("%2d ",i);
@@ -1343,7 +1343,7 @@ void print_obj_cod()
                 struct LTORG *ptr_lto=&LTORG_Arr[j];
                 if(strcmp(LTORG_Arr[j].name,"NULL")!=0&&LTORG_Arr[j].isltorg==1)
                 {
-                     printf("%s",LTORG_Arr[j].content);
+                     sprintf(address_arr[add_i++].address_char,"%s",LTORG_Arr[j].content);
 
                 }
                 while(ptr_lto->next!=NULL)
@@ -1351,7 +1351,7 @@ void print_obj_cod()
                     ptr_lto=ptr_lto->next;
                     if(strcmp(ptr_lto->name,"NULL")!=0&&ptr_lto->isltorg==1)
                     {
-                         printf("%s",ptr_lto->content);
+                         sprintf(address_arr[add_i++].address_char,"%s",ptr_lto->content);
                     }
                 }
             }
@@ -1364,7 +1364,7 @@ void print_obj_cod()
                 if(strcmp(LTORG_Arr[j].name,"NULL")!=0&&LTORG_Arr[j].isltorg==0)
                 {
 
-                     printf("%s",ptr_lto->content);
+                     sprintf(address_arr[add_i++].address_char,"%s",ptr_lto->content);
                 }
                 while(ptr_lto->next!=NULL)
                 {
@@ -1372,21 +1372,17 @@ void print_obj_cod()
                     if(strcmp(ptr_lto->name,"NULL")!=0&&ptr_lto->isltorg==0)
                     {
 
-                         printf("%s",ptr_lto->content);
+                         sprintf(address_arr[add_i++].address_char,"%s",ptr_lto->content);
                     }
 
                 }
             }
         }else if(strcmp(save_srcpro[i].obj_code_str,"")!=0)
         {
-             printf("%s",save_srcpro[i].obj_code_str);
+             sprintf(address_arr[add_i++].address_char,"%s",save_srcpro[i].obj_code_str);
         }
-
-
-
-
-
     }
+
 }
 int main()
 {
