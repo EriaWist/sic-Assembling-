@@ -17,6 +17,7 @@
 int Srcpro_size=0;
 int BASE=0;
 char regs_name[][4] = {"A","X","L","B","S","T","F","","PC","SW"};
+int all=0;
 struct obj_arr_address
 {
     int address_int;
@@ -598,11 +599,11 @@ void get_address_size ()//算每一條指令站多少byte-開始
                     if (ptr->isltorg!=1)
                     {
                         ptr->address = block_locctr_arrary[use].address;
-                        block_locctr_arrary[use].address += strlen(ptr->name)-3;
                         ptr->isltorg=0;
                         ptr->use=use;
                         if(ptr->name[0]=='C')
                         {
+                            block_locctr_arrary[use].address += strlen(ptr->name)-3;
                             // ptr->name[0]='\'';
                             int j;
                             char lt_temp[10],*lt_temp2;
@@ -621,7 +622,7 @@ void get_address_size ()//算每一條指令站多少byte-開始
                         }
                         else if(ptr->name[0]=='X')
                         {
-
+                            block_locctr_arrary[use].address += (strlen(ptr->name)-3)/2;
                             char lt_temp[10],*lt_temp2;
                             strcpy(lt_temp,ptr->name);
                             strtok(lt_temp, "'");
@@ -636,11 +637,12 @@ void get_address_size ()//算每一條指令站多少byte-開始
                         if (ptr->isltorg!=1)
                         {
                             ptr->address = block_locctr_arrary[use].address;
-                            block_locctr_arrary[use].address += strlen(ptr->name)-3;
+
                             ptr->isltorg=0;
                             ptr->use=use;
                             if(ptr->name[0]=='C')
                             {
+                                block_locctr_arrary[use].address += strlen(ptr->name)-3;
                                 // ptr->name[0]='\'';
                                 int j;
                                 char lt_temp[10],*lt_temp2;
@@ -659,7 +661,7 @@ void get_address_size ()//算每一條指令站多少byte-開始
                             }
                             else if(ptr->name[0]=='X')
                             {
-
+                                block_locctr_arrary[use].address += (strlen(ptr->name)-3)/2;
                                 char lt_temp[10],*lt_temp2;
                                 strcpy(lt_temp,ptr->name);
                                 strtok(lt_temp, "'");
@@ -735,6 +737,8 @@ void get_address_size ()//算每一條指令站多少byte-開始
                 ptr->use=use;
                 ptr->address=save_srcpro[i].address;
                 ptr->next=NULL;
+
+
             }
         }
 
@@ -1402,7 +1406,9 @@ int main()
     priint_symname();
     test_print_op_code();//測試print_opOCD
     test_print_LITTAB();
+
     print_obj_cod();
+    printf("\n%x",block_locctr_arrary[0].address);
     if (fp_w == NULL)
         return -1;
     fclose(fp_w);
