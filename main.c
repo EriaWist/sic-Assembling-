@@ -1305,6 +1305,83 @@ void test_print_LITTAB()//常數表輸出
         }
     }
 }
+void print_obj_cod()
+{
+     int i,f=0;
+    for (i=0; i<Srcpro_size; i++)
+    {
+        //printf("%2d ",i);
+
+        char *temp;
+        //printf("%04x ",save_srcpro[i].address); //地址
+        //temp = save_srcpro[i].symname;
+      //  if (temp!=NULL)
+       // {
+      //      printf("%s",temp);
+      //  }
+        temp = save_srcpro[i].opcode;
+        if (save_srcpro[i].exformat)  // +
+        {
+            f=4;
+        }
+        else
+        {
+           f=save_srcpro[i].address_size;
+        }
+
+        temp = save_srcpro[i].optr_1;
+        int j;
+        if (strcmp(save_srcpro[i].opcode,"LTORG ")==0)
+        {
+            for(j=0; j<HASH_SIZE; j++)
+            {
+                struct LTORG *ptr_lto=&LTORG_Arr[j];
+                if(strcmp(LTORG_Arr[j].name,"NULL")!=0&&LTORG_Arr[j].isltorg==1)
+                {
+
+
+                }
+                while(ptr_lto->next!=NULL)
+                {
+                    ptr_lto=ptr_lto->next;
+                    if(strcmp(ptr_lto->name,"NULL")!=0&&ptr_lto->isltorg==1)
+                    {
+                        printf("   %04x      * %s",ptr_lto->address,ptr_lto->name);
+                        printf("%33s",ptr_lto->content);
+                        printf("\n");
+                    }
+                }
+            }
+        }
+        else if(strcmp(save_srcpro[i].opcode,"END   ")==0)
+        {
+            for(j=0; j<HASH_SIZE; j++)
+            {
+                struct LTORG *ptr_lto=&LTORG_Arr[j];
+                if(strcmp(LTORG_Arr[j].name,"NULL")!=0&&LTORG_Arr[j].isltorg==0)
+                {
+
+                    printf("   %04x      * %s",LTORG_Arr[j].address,LTORG_Arr[j].name);
+                    printf("%33s",ptr_lto->content);
+                    printf("\n");
+                }
+                while(ptr_lto->next!=NULL)
+                {
+                    ptr_lto=ptr_lto->next;
+                    if(strcmp(ptr_lto->name,"NULL")!=0&&ptr_lto->isltorg==0)
+                    {
+
+                        printf("   %04x      * %s",ptr_lto->address,ptr_lto->name);
+                        printf("%33s",ptr_lto->content);
+                        printf("\n");
+                    }
+
+                }
+            }
+        }
+
+    }
+}
 int main()
 {
     char reg1[100], reg2[100], reg3[100];
@@ -1328,4 +1405,5 @@ int main()
         return -1;
     fclose(fp_w);
 }
+
 
