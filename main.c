@@ -1451,7 +1451,7 @@ void print_obj_cod()
         }
         all_j=i_i;
         printf("\n");
-
+         fprintf(fp_w,"\n");
     }
     for (i=0; i<add_i; i++)
     {
