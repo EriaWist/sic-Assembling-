@@ -20,10 +20,10 @@ char regs_name[][4] = {"A","X","L","B","S","T","F","","PC","SW"};
 int all=0;
 struct obj_arr_address
 {
-    int address_int;
     char address_char[10];
-
-
+    int address_int;
+    char obj_char[10];
+    int isf;
 }address_arr[MAX_Srcpro_SIZE];
 struct block_locctr//存use空間
 {
@@ -1079,7 +1079,7 @@ void obj_code()
             }
             else if(save_srcpro[i].optr_1[0]=='X')
             {
-                printf("%s\n",save_srcpro[i].optr_1);
+
                 char lt_temp[10],*lt_temp2;
                 strcpy(lt_temp,save_srcpro[i].optr_1);
                 strtok(lt_temp, "'");
@@ -1319,8 +1319,11 @@ void test_print_LITTAB()//常數表輸出
 }
 void print_obj_cod()
 {
+    FILE *fp_w = fopen("data_out.txt", "w");
     printf("H %s %04X %X \n",save_srcpro[0].symname,save_srcpro[0].address,block_locctr_arrary[0].address-save_srcpro[0].address);
+    fprintf(fp_w, "H %s %04X %X \n",save_srcpro[0].symname,save_srcpro[0].address,block_locctr_arrary[0].address-save_srcpro[0].address);
      int i,f=0,add_i=0;
+    int kk=0;
     for (i=0; i<Srcpro_size; i++)
     {
         //printf("%2d ",i);
@@ -1335,11 +1338,12 @@ void print_obj_cod()
         temp = save_srcpro[i].opcode;
         if (save_srcpro[i].exformat)  // +
         {
-            f=4;
+            address_arr[kk].isf=1;
+            f++;
         }
         else
         {
-           f=save_srcpro[i].address_size;
+           address_arr[kk].isf=0;
         }
 
         temp = save_srcpro[i].optr_1;
@@ -1351,15 +1355,21 @@ void print_obj_cod()
                 struct LTORG *ptr_lto=&LTORG_Arr[j];
                 if(strcmp(LTORG_Arr[j].name,"NULL")!=0&&LTORG_Arr[j].isltorg==1)
                 {
-                     sprintf(address_arr[add_i++].address_char,"%s",LTORG_Arr[j].content);
-
+                     sprintf(address_arr[add_i].obj_char,"%s",LTORG_Arr[j].content);
+                    sprintf(address_arr[add_i].address_char,"%X",LTORG_Arr[j].address);
+                    address_arr[add_i++].address_int=LTORG_Arr[j].address;
+                    kk++;
                 }
                 while(ptr_lto->next!=NULL)
                 {
                     ptr_lto=ptr_lto->next;
                     if(strcmp(ptr_lto->name,"NULL")!=0&&ptr_lto->isltorg==1)
                     {
-                         sprintf(address_arr[add_i++].address_char,"%s",ptr_lto->content);
+                         sprintf(address_arr[add_i].obj_char,"%s",ptr_lto->content);
+                        sprintf(address_arr[add_i].address_char,"%X",ptr_lto->address);
+                        address_arr[add_i++].address_int=ptr_lto->address;
+
+                        kk++;
                     }
                 }
             }
@@ -1372,7 +1382,10 @@ void print_obj_cod()
                 if(strcmp(LTORG_Arr[j].name,"NULL")!=0&&LTORG_Arr[j].isltorg==0)
                 {
 
-                     sprintf(address_arr[add_i++].address_char,"%s",ptr_lto->content);
+                     sprintf(address_arr[add_i].obj_char,"%s",ptr_lto->content);
+                    sprintf(address_arr[add_i].address_char,"%X",ptr_lto->address);
+                    address_arr[add_i++].address_int=ptr_lto->address;
+                    kk++;
                 }
                 while(ptr_lto->next!=NULL)
                 {
@@ -1380,30 +1393,83 @@ void print_obj_cod()
                     if(strcmp(ptr_lto->name,"NULL")!=0&&ptr_lto->isltorg==0)
                     {
 
-                         sprintf(address_arr[add_i++].address_char,"%s",ptr_lto->content);
+                         sprintf(address_arr[add_i].obj_char,"%s",ptr_lto->content);
+                        sprintf(address_arr[add_i].address_char,"%X",ptr_lto->address);
+
+                        address_arr[add_i++].address_int=ptr_lto->address;
+                        kk++;
                     }
 
                 }
             }
         }else if(strcmp(save_srcpro[i].obj_code_str,"")!=0)
         {
-             sprintf(address_arr[add_i++].address_char,"%s",save_srcpro[i].obj_code_str);
+             sprintf(address_arr[add_i].obj_char,"%s",save_srcpro[i].obj_code_str);
+            sprintf(address_arr[add_i].address_char,"%X",save_srcpro[i].address);
+            address_arr[add_i++].address_int=save_srcpro[i].address;
+            kk++;
         }
     }
-    int address=0;
-    printf("T %X",address);
-    for (i=0; i<add_i; i++)
+    int all_j=0;
+    int address=0,all=0;
+    while (1)
     {
 
-        printf("%s %d\n",address_arr[i].address_char,strlen(address_arr[i].address_char)/2);
-        address+=strlen(address_arr[i].address_char)/2;
-    }
+        all=0;
+        for (i=all_j; i<add_i; i++)
+        {
+            all+=strlen(address_arr[i].obj_char)/2;
+        }
+        if (all==0||all_j==add_i) {
+            break;
+        }
+        printf("T %04s",address_arr[all_j].address_char);
+        fprintf(fp_w, "T %04s",address_arr[all_j].address_char);
+        int row=0X1D;
 
+        int i_i=0;
+        if (all>=row) {
+            printf("%02X",row);
+            fprintf(fp_w, "%02X",row);
+            for (i=0,i_i=all_j; i<row;i_i++,i+=strlen(address_arr[i_i].obj_char)/2)
+            {
+                printf("%s",address_arr[i_i].obj_char);
+                fprintf(fp_w, "%s",address_arr[i_i].obj_char);
+            }
+
+            }
+        else
+        {
+            printf("%02X",all);
+            fprintf(fp_w, "%02X",all);
+            for (i=0,i_i=all_j; i<all;i_i++,i+=strlen(address_arr[i_i].obj_char)/2)
+            {
+                printf("%s",address_arr[i_i].obj_char);
+                 fprintf(fp_w, "%s",address_arr[i_i].obj_char);
+            }
+
+        }
+        all_j=i_i;
+        printf("\n");
+
+    }
+    for (i=0; i<add_i; i++)
+    {
+        if (address_arr[i].isf==1) {
+            printf("M %06X05\n",address_arr[i].address_int+1);
+            fprintf(fp_w, "M %06X05\n",address_arr[i].address_int+1);
+        }
+    }
+    printf("E %06s",address_arr[0].address_char);
+    fprintf(fp_w, "E %06s",address_arr[0].address_char);
+     if (fp_w == NULL)
+        return -1;
+    fclose(fp_w);
 }
 int main()
 {
     char reg1[100], reg2[100], reg3[100];
-    FILE *fp_w = fopen("data_out.txt", "w");
+
     init_symname ();
     init_op_cod_arr();
     red_op_code();
@@ -1421,10 +1487,6 @@ int main()
     test_print_LITTAB();
 
     print_obj_cod();
-
-    if (fp_w == NULL)
-        return -1;
-    fclose(fp_w);
 }
 
 
