@@ -1079,7 +1079,7 @@ void obj_code()
             }
             else if(save_srcpro[i].optr_1[0]=='X')
             {
-                printf("%s\n",save_srcpro[i].optr_1);
+                
                 char lt_temp[10],*lt_temp2;
                 strcpy(lt_temp,save_srcpro[i].optr_1);
                 strtok(lt_temp, "'");
@@ -1390,15 +1390,46 @@ void print_obj_cod()
              sprintf(address_arr[add_i++].address_char,"%s",save_srcpro[i].obj_code_str);
         }
     }
-    int address=0;
-    printf("T %X",address);
-    for (i=0; i<add_i; i++)
-    {
+    int all_j=0;
+    int address=0,all=0;
+    while (1) {
+        
+        printf("T %04X",address);
+        all=0;
+        for (i=all_j; i<add_i; i++)
+        {
+            all+=strlen(address_arr[i].address_char)/2;
+        }
+        if (all==0||all_j==add_i) {
+            break;
+        }
+        int row=0X1D;
+        address+=all;
+        int i_i=0;
+        if (all>=row) {
+            printf("%02X",row);
+           
+            for (i=0,i_i=all_j; i<row;i_i++,i+=strlen(address_arr[i_i].address_char)/2)
+            {
+                printf("%s",address_arr[i_i].address_char);
+            }
+          
+            }
+        else
+        {
+            printf("%04X",all);
+            
+            for (i=0,i_i=all_j; i<all;i_i++,i+=strlen(address_arr[i_i].address_char)/2)
+            {
+                printf("%s",address_arr[i_i].address_char);
+            }
+            
+        }
+        all_j=i_i;
+        printf("\n");
 
-        printf("%s %d\n",address_arr[i].address_char,strlen(address_arr[i].address_char)/2);
-        address+=strlen(address_arr[i].address_char)/2;
     }
-
+    
 }
 int main()
 {
